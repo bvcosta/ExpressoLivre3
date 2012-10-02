@@ -80,6 +80,7 @@ msgstr "Estado"
 #: Messenger/js/Groupie.js:539
 msgid "Role"
 msgstr "Cargo"
+<<<<<<< HEAD
 
 #: Messenger/js/LogHandler.js:78
 #: Messenger/js/ChatHandler.js:126
@@ -758,4 +759,795 @@ msgstr "Iniciar chat de vídeo"
 #~ msgid_plural "Links [%d]"
 #~ msgstr[0] "Enlace"
 #~ msgstr[1] "Enlaces [%d]"
+=======
 
+#: Messenger/js/LogHandler.js:78
+#: Messenger/js/ChatHandler.js:126
+msgid "is unavailable"
+msgstr "no está disponible"
+
+#: Messenger/js/LogHandler.js:84
+msgid "Status text"
+msgstr "Texto del Estado"
+
+#: Messenger/js/LogHandler.js:86
+msgid "is away"
+msgstr "está lejos"
+
+#: Messenger/js/LogHandler.js:89
+msgid "is busy"
+msgstr "está ocupada"
+
+#: Messenger/js/LogHandler.js:92
+msgid "auto status (idle)"
+msgstr "el estado automático (en espera)"
+
+#: Messenger/js/LogHandler.js:95
+msgid "is on-line"
+msgstr "no está en línea"
+
+#: Messenger/js/LogHandler.js:112
+msgid "The intended recipient is temporarily unavailable."
+msgstr "El destinatario no está disponible temporalmente."
+
+#: Messenger/js/LogHandler.js:115
+msgid "The remote server does not exist or could not be reached."
+msgstr "El servidor remoto no existe o no se pudo alcanzar."
+
+#: Messenger/js/LogHandler.js:118
+msgid "Communication with the remote server has been interrupted."
+msgstr "La comunicación con el servidor remoto se ha interrumpido."
+
+#: Messenger/js/LogHandler.js:124
+#: Messenger/js/LogHandler.js:232
+msgid "SERVER ERROR"
+msgstr "ERROR DEL SERVIDOR"
+
+#: Messenger/js/LogHandler.js:143
+#: Messenger/js/LogHandler.js:144
+msgid "Accept your subscription"
+msgstr "Acepta tu suscripción"
+
+#: Messenger/js/LogHandler.js:149
+msgid "Allow"
+msgstr "Permitir"
+
+#: Messenger/js/LogHandler.js:150
+msgid "Deny"
+msgstr "Negar"
+
+#: Messenger/js/LogHandler.js:152
+msgid "Subscription Approval"
+msgstr "Aprobación de Suscripción"
+
+#: Messenger/js/LogHandler.js:153
+msgid "wants to subscribe you."
+msgstr "quiere suscribirse."
+
+#: Messenger/js/LogHandler.js:172
+msgid "Denied/Removed your subscription"
+msgstr "Negado / remueven su suscripción"
+
+#: Messenger/js/LogHandler.js:173
+msgid "Not authorized!"
+msgstr "No autorizado!"
+
+#: Messenger/js/LogHandler.js:204
+msgid "Error sending: "
+msgstr "Error de envío:"
+
+#: Messenger/js/LogHandler.js:204
+#: Messenger/js/ChatHandler.js:100
+#: Messenger/js/ChatHandler.js:109
+#: Messenger/js/Messenger.js:210
+#: Messenger/js/Messenger.js:297
+#: Messenger/js/RosterHandler.js:306
+#: Messenger/js/RosterHandler.js:360
+msgid "Error"
+msgstr "Error"
+
+#: Messenger/js/LogHandler.js:206
+#: Messenger/js/LogHandler.js:233
+msgid "Error number "
+msgstr "Error número"
+
+#: Messenger/js/LogHandler.js:218
+msgid "Cancel 404: The item was not found."
+msgstr "Cancelar 404: El iten no se ha encontrado."
+
+#: Messenger/js/LogHandler.js:221
+msgid "Cancel 501: The feature was not implemented."
+msgstr "Cancelar 501: La función no ha sido implementada."
+
+#: Messenger/js/LogHandler.js:224
+msgid "Wait 500: Internal server error."
+msgstr "Espere 500: Error interno del servidor."
+
+#: Messenger/js/LogHandler.js:227
+msgid "Cancel 503: Service unavailable."
+msgstr "Cancelar 503: Servicio no disponible."
+
+#: Messenger/js/LogHandler.js:244
+#: Messenger/js/ChatHandler.js:126
+#: Messenger/js/ChatHandler.js:127
+msgid "Info"
+msgstr "Información"
+
+#: Messenger/js/ChatHandler.js:18
+msgid "Group chat in room"
+msgstr "Chat de grupo en la sala"
+
+#: Messenger/js/ChatHandler.js:20
+msgid "Chat with"
+msgstr "Chatea con"
+
+#: Messenger/js/ChatHandler.js:84
+msgid "You chose to download the every chat history"
+msgstr "You chose to download the every chat history"
+
+#: Messenger/js/ChatHandler.js:85
+msgid "Do you want to download this chat"
+msgstr "¿Quieres descargar este chat"
+
+#: Messenger/js/ChatHandler.js:101
+msgid "Error downloading Chat History"
+msgstr "Error descargando Historial de Chat"
+
+#: Messenger/js/ChatHandler.js:127
+msgid "Your messages will be sent offline"
+msgstr "Los mensajes serán enviados fuera de línea"
+
+#: Messenger/js/Window.js:18
+msgid "Group created successfully"
+msgstr "Fecha de creación con éxito"
+
+#: Messenger/js/Window.js:21
+#: Messenger/js/Layout.js:46
+#: Messenger/js/Layout.js:428
+msgid "Add Group"
+msgstr "Agregar grupo"
+
+#: Messenger/js/Window.js:21
+msgid "The group already exists"
+msgstr "El grupo ya existe"
+
+#: Messenger/js/Window.js:53
+#: Messenger/js/Window.js:58
+msgid "Added successfuly"
+msgstr "exitosamente añadido"
+
+#: Messenger/js/Window.js:60
+msgid "Add Buddy"
+msgstr "Añadir amigo"
+
+#: Messenger/js/Window.js:60
+msgid "Buddy not added"
+msgstr "Amigo no añade"
+
+#: Messenger/js/Messenger.js:74
+msgid "Messenger"
+msgid_plural "Messengers"
+msgstr[0] "Messenger"
+msgstr[1] "Messengers"
+
+#: Messenger/js/Messenger.js:201
+msgid "Connecting"
+msgstr "Conexión"
+
+#: Messenger/js/Messenger.js:211
+#: Messenger/js/Messenger.js:298
+msgid "Authentication failed"
+msgstr "Error de autenticación"
+
+#: Messenger/js/Messenger.js:289
+msgid "Messenger has been disconnected!"
+msgstr "Messenger se ha desconectado!"
+
+#: Messenger/js/Messenger.js:352
+#: Messenger/js/Layout.js:81
+msgid "Connect"
+msgstr "Conectar"
+
+#: Messenger/js/Layout.js:8
+msgid "Expresso Messenger"
+msgstr "Expresso Messenger"
+
+#: Messenger/js/Layout.js:32
+msgid "Actions"
+msgstr "Acciones"
+
+#: Messenger/js/Layout.js:38
+#: Messenger/js/Layout.js:352
+msgid "Add Contact"
+msgstr "Añadir este contacto"
+
+#: Messenger/js/Layout.js:55
+msgid "Logout"
+msgstr "Cerrar sesión"
+
+#: Messenger/js/Layout.js:116
+msgid "your Status"
+msgstr "su Estado"
+
+#: Messenger/js/Layout.js:117
+msgid "press ENTER after"
+msgstr "presione ENTER después de"
+
+#: Messenger/js/Layout.js:146
+msgid "Online"
+msgstr "Online"
+
+#: Messenger/js/Layout.js:147
+msgid "Away"
+msgstr "Lejos"
+
+#: Messenger/js/Layout.js:148
+msgid "Do Not Disturb"
+msgstr "No molestar"
+
+#: Messenger/js/Layout.js:149
+msgid "Unavailable"
+msgstr "Indisponible"
+
+#: Messenger/js/Layout.js:370
+msgid "JID"
+msgstr "JID"
+
+#: Messenger/js/Layout.js:377
+#: Messenger/js/Layout.js:436
+msgid "Name"
+msgstr "Nombre"
+
+#: Messenger/js/Layout.js:382
+msgid "Group"
+msgstr "Grupo"
+
+#: Messenger/js/Layout.js:388
+msgid "Select a group"
+msgstr "Seleccione un grupo de"
+
+#: Messenger/js/Layout.js:398
+#: Messenger/js/Layout.js:441
+msgid "Add"
+msgstr "añadir"
+
+#: Messenger/js/Layout.js:474
+msgid "Join Groupchat"
+msgstr "Únete al grupo de charla"
+
+#: Messenger/js/Layout.js:483
+msgid "Identity"
+msgstr "Identidad"
+
+#: Messenger/js/Layout.js:489
+msgid "Host"
+msgstr "Host"
+
+#: Messenger/js/Layout.js:494
+msgid "Room"
+msgstr "Sala"
+
+#: Messenger/js/Layout.js:499
+msgid "Nickname"
+msgstr "Apodo"
+
+#: Messenger/js/Layout.js:505
+msgid "Password"
+msgstr "contraseña"
+
+#: Messenger/js/Layout.js:509
+msgid "Join"
+msgstr "Unirse"
+
+#: Messenger/js/FileTransfer.js:29
+#: Messenger/js/FileTransfer.js:54
+#: Messenger/js/FileTransfer.js:88
+#: Messenger/js/FileTransfer.js:143
+msgid "File Transfer"
+msgstr "Transferencia de archivos"
+
+#: Messenger/js/FileTransfer.js:30
+msgid "You must choose a resource"
+msgstr "Usted debe elegir un recurso"
+
+#: Messenger/js/FileTransfer.js:46
+#: Messenger/js/FileTransfer.js:55
+msgid "File sent"
+msgstr "Archivo enviado"
+
+#: Messenger/js/FileTransfer.js:65
+msgid "File Transfer Error"
+msgstr "Error de transferencia de archivos"
+
+#: Messenger/js/FileTransfer.js:92
+msgid "wants to send you a file:"
+msgstr "quiere enviar un archivo:"
+
+#: Messenger/js/FileTransfer.js:97
+msgid "Do you allow"
+msgstr "¿Permiten"
+
+#: Messenger/js/FileTransfer.js:101
+#: Messenger/js/RosterTree.js:76
+#: Messenger/js/RosterTree.js:175
+msgid "Yes"
+msgstr "Sí"
+
+#: Messenger/js/FileTransfer.js:107
+#: Messenger/js/RosterTree.js:77
+#: Messenger/js/RosterTree.js:176
+msgid "No"
+msgstr "No"
+
+#: Messenger/js/FileTransfer.js:151
+msgid " has more than one resource. Choose one!"
+msgstr " tiene más de un recurso. Elige uno!"
+
+#: Messenger/js/RosterTree.js:18
+#: Messenger/js/RosterTree.js:134
+msgid "Rename"
+msgstr "Rebautizar"
+
+#: Messenger/js/RosterTree.js:22
+#: Messenger/js/RosterTree.js:138
+msgid "Remove"
+msgstr "Quitar"
+
+#: Messenger/js/RosterTree.js:29
+msgid "Subscribe"
+msgstr "Suscribir"
+
+#: Messenger/js/RosterTree.js:33
+msgid "Move to"
+msgstr "Mover a"
+
+#: Messenger/js/RosterTree.js:44
+#: Messenger/js/Chat.js:27
+msgid "Send file"
+msgstr "Enviar archivo"
+
+#: Messenger/js/RosterTree.js:59
+#: Messenger/js/RosterTree.js:152
+msgid "A name is required"
+msgstr "Un nombre es obligatorio"
+
+#: Messenger/js/RosterTree.js:79
+msgid "Delete Contact"
+msgstr "Eliminar contacto"
+
+#: Messenger/js/RosterTree.js:80
+#: Messenger/js/RosterTree.js:179
+msgid "Are you sure to delete "
+msgstr "¿Está seguro que desea eliminar"
+
+#: Messenger/js/RosterTree.js:115
+msgid "Empty"
+msgstr "Vacío"
+
+#: Messenger/js/RosterTree.js:163
+msgid "Rename Group"
+msgstr "Cambiar nombre de grupo"
+
+#: Messenger/js/RosterTree.js:164
+msgid "The group already exists!"
+msgstr "El grupo ya existe!"
+
+#: Messenger/js/RosterTree.js:178
+msgid "Delete Group"
+msgstr "Eliminar grupo"
+
+#: Messenger/js/RosterTree.js:216
+#: Messenger/js/RosterTree.js:288
+#: Messenger/js/RosterTree.js:473
+msgid "Subscription"
+msgstr "Suscripción"
+
+#: Messenger/js/ConfigWindow.js:8
+msgid "Preferences"
+msgstr "Preferencias"
+
+#: Messenger/js/ConfigWindow.js:22
+msgid "Notifications"
+msgstr "Notificaciones"
+
+#: Messenger/js/ConfigWindow.js:28
+msgid "Show notifications"
+msgstr "Mostrar notificaciones"
+
+#: Messenger/js/ConfigWindow.js:39
+msgid "History"
+msgstr "Historia"
+
+#: Messenger/js/ConfigWindow.js:69
+msgid "Custom Name"
+msgstr "Nombre personalizado"
+
+#: Messenger/js/ConfigWindow.js:75
+msgid "Login"
+msgstr "Login"
+
+#: Messenger/js/ConfigWindow.js:88
+msgid "Save"
+msgstr "Guardar"
+
+#: Messenger/js/ConfigWindow.js:92
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: Messenger/js/RosterHandler.js:50
+#: Messenger/js/RosterHandler.js:357
+msgid "was successfully removed"
+msgstr "se ha eliminado correctamente"
+
+#: Messenger/js/RosterHandler.js:300
+#: Messenger/js/RosterHandler.js:356
+msgid "Successful"
+msgstr "Exitoso"
+
+#: Messenger/js/RosterHandler.js:301
+#: Messenger/js/RosterHandler.js:357
+#: Messenger/js/RosterHandler.js:361
+msgid "The group"
+msgstr "El grupo"
+
+#: Messenger/js/RosterHandler.js:301
+msgid "was successfully renamed to"
+msgstr "fue renombrada con éxito para"
+
+#: Messenger/js/RosterHandler.js:306
+msgid " already exist. It was not renamed."
+msgstr " ya existen. No se ha cambiado el nombre."
+
+#: Messenger/js/RosterHandler.js:361
+msgid "was not removed"
+msgstr "no fue eliminado"
+
+#: Messenger/js/Chat.js:22
+msgid "Options"
+msgstr "Opciones"
+
+#: Messenger/js/Chat.js:39
+msgid "Start video chat"
+msgstr "Iniciar chat de vídeo"
+
+#~ msgid "manage shared addressbooks"
+#~ msgstr "administrar libretas de direcciones compartidas"
+
+#~ msgid "Create new shared addressbook folders"
+#~ msgstr "Crear nuevas libretas de direcciones compartidas"
+
+#~ msgid "%s's personal addressbook"
+#~ msgstr "Libreta de direcciones de %s's"
+
+#~ msgid "Business Contact Data"
+#~ msgstr "Datos de contacto de empresa"
+
+#~ msgid "Organisation / Unit"
+#~ msgstr "Organización / Unidad"
+
+#~ msgid "Business Address"
+#~ msgstr "Dirección de la empresa"
+
+#~ msgid "Email"
+#~ msgstr "Email"
+
+#~ msgid "Telephone Work"
+#~ msgstr "Teléfono de trabajo"
+
+#~ msgid "Telephone Cellphone"
+#~ msgstr "Teléfono celular"
+
+#~ msgid "Telephone Car"
+#~ msgstr "Teléfono del automóvil"
+
+#~ msgid "Telephone Fax"
+#~ msgstr "Teléfono Fax"
+
+#~ msgid "Telephone Page"
+#~ msgstr "Página del teléfono"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Assistant"
+#~ msgstr "Asistente"
+
+#~ msgid "Assistant Telephone"
+#~ msgstr "Teléfono del asistente"
+
+#~ msgid "Private Contact Data"
+#~ msgstr "Datos de contacto privados"
+
+#~ msgid "Private Address"
+#~ msgstr "Dirección privada"
+
+#~ msgid "Email Home"
+#~ msgstr "Email doméstico"
+
+#~ msgid "Telephone Home"
+#~ msgstr "Teléfono del hogar"
+
+#~ msgid "Telephone Cellphone Private"
+#~ msgstr "Teléfono Celular Privado"
+
+#~ msgid "Telephone Fax Home"
+#~ msgstr "Teléfono Fax Doméstico"
+
+#~ msgid "URL Home"
+#~ msgstr "URL doméstico"
+
+#~ msgid "Other Data"
+#~ msgstr "Otra Información"
+
+#~ msgid "Birthday"
+#~ msgstr "Cumpleaños"
+
+#~ msgid "Job Title"
+#~ msgstr "Nombre del Cargo"
+
+#~ msgid "Map"
+#~ msgstr "Mapa"
+
+#~ msgid "Personal Information"
+#~ msgstr "Información Personal"
+
+#~ msgid "Salutation"
+#~ msgstr "Trato"
+
+#~ msgid "Title"
+#~ msgstr "Título"
+
+#~ msgid "First Name"
+#~ msgstr "Nombre"
+
+#~ msgid "Middle Name"
+#~ msgstr "Segundo Nombre"
+
+#~ msgid "Company"
+#~ msgstr "Compañía"
+
+#~ msgid "Unit"
+#~ msgstr "Unidad"
+
+#~ msgid "Display Name"
+#~ msgstr "Nombre a Mostrar"
+
+#~ msgid "Suffix"
+#~ msgstr "Sufijo"
+
+#~ msgid "Job Role"
+#~ msgstr "Descripción del Cargo"
+
+#~ msgid "Contact Information"
+#~ msgstr "Información de Contacto"
+
+#~ msgid "Phone"
+#~ msgstr "Teléfono"
+
+#~ msgid "Mobile"
+#~ msgstr "Móvil"
+
+#~ msgid "Fax"
+#~ msgstr "Fax"
+
+#~ msgid "Phone (private)"
+#~ msgstr "Fono (privado)"
+
+#~ msgid "Mobile (private)"
+#~ msgstr "Celular (privado)"
+
+#~ msgid "Fax (private)"
+#~ msgstr "Fax (privado)"
+
+#~ msgid "E-Mail"
+#~ msgstr "E-Mail"
+
+#~ msgid "E-Mail (private)"
+#~ msgstr "E-Mail (privado)"
+
+#~ msgid "Web"
+#~ msgstr "Web"
+
+#~ msgid "Company Address"
+#~ msgstr "Dirección de la Empresa"
+
+#~ msgid "Street"
+#~ msgstr "Calle"
+
+#~ msgid "Street 2"
+#~ msgstr "Dirección 2"
+
+#~ msgid "Region"
+#~ msgstr "Región"
+
+#~ msgid "Postal Code"
+#~ msgstr "Código Postal"
+
+#~ msgid "City"
+#~ msgstr "Ciudad"
+
+#~ msgid "Country"
+#~ msgstr "País"
+
+#~ msgid "Enter description"
+#~ msgstr "Escribir descripción"
+
+#~ msgid "Export as pdf"
+#~ msgstr "Exportar como pdf"
+
+#~ msgid "Either {0} or {1} must be given"
+#~ msgstr "Debe ingresar {0} o {1}"
+
+#~ msgid "Type"
+#~ msgstr "Tipo"
+
+#~ msgid "Tags"
+#~ msgstr "Etiquetas"
+
+#~ msgid "Full Name"
+#~ msgstr "Nombre Completo"
+
+#~ msgid "Postalcode"
+#~ msgstr "Código Postal"
+
+#~ msgid "Street (private)"
+#~ msgstr "Calle (privado)"
+
+#~ msgid "City (private)"
+#~ msgstr "Ciudad (privado)"
+
+#~ msgid "Region (private)"
+#~ msgstr "Región (privado)"
+
+#~ msgid "Postalcode (private)"
+#~ msgstr "Código Postal (privado)"
+
+#~ msgid "Country (private)"
+#~ msgstr "País (privado)"
+
+#~ msgid "Car phone"
+#~ msgstr "Teléfono del Automóvil"
+
+#~ msgid "Pager"
+#~ msgstr "Buscapersonas"
+
+#~ msgid "Email (private)"
+#~ msgstr "Email (privado)"
+
+#~ msgid "URL (private)"
+#~ msgstr "URL (privado)"
+
+#~ msgid "Timezone"
+#~ msgstr "Zona Horaria"
+
+#~ msgid "Geo"
+#~ msgstr "Geo"
+
+#~ msgid "Export Contact"
+#~ msgstr "Exportar Contacto"
+
+#~ msgid "Export as PDF"
+#~ msgstr "Exportar como PDF"
+
+#~ msgid "Export as CSV"
+#~ msgstr "Exportar como CSV"
+
+#~ msgid "Internal Contact"
+#~ msgstr "Contacto Interno"
+
+#~ msgid "Contacts"
+#~ msgstr "Contactos"
+
+#~ msgid "Private"
+#~ msgstr "Privado"
+
+#~ msgid "User Account"
+#~ msgstr "Cuenta de Usuario"
+
+#~ msgid "Quick search"
+#~ msgstr "Búsqueda Rápida"
+
+#~ msgid "Creation Time"
+#~ msgstr "Fecha de Creación"
+
+#~ msgid "Default Addressbook"
+#~ msgstr "Libreta de Contactos Predefinida"
+
+#~ msgid "The default addressbook for new contacts"
+#~ msgstr "La libreta de dirección predefinida para nuevos contactos"
+
+#~ msgid "Mr"
+#~ msgstr "Sr"
+
+#~ msgid "Ms"
+#~ msgstr "Sra"
+
+#~ msgid "Internal Contacts"
+#~ msgstr "Contactos Internos"
+
+#~ msgid "Searching..."
+#~ msgstr "Buscando..."
+
+#~ msgid "Call contact"
+#~ msgstr "Contacto de llamadas"
+
+#~ msgid "Compose email"
+#~ msgstr "Escribir Email"
+
+#~ msgid "Work"
+#~ msgstr "Trabajo"
+
+#~ msgid "Home"
+#~ msgstr "Hogar"
+
+#~ msgid "Cell"
+#~ msgstr "Celular"
+
+#~ msgid "Cell private"
+#~ msgstr "Celular privado"
+
+#~ msgid "Last Modified Time"
+#~ msgstr "Fecha Última Modificación"
+
+#~ msgid "addressbook"
+
+#~ msgid_plural "addressbooks"
+#~ msgstr[0] "libreta de direcciones"
+#~ msgstr[1] "addressbooks"
+
+#~ msgid "addressbooks"
+#~ msgstr "libretas de direcciones"
+
+#~ msgid "contacts"
+#~ msgstr "contactos"
+
+#~ msgid "export as pdf"
+#~ msgstr "exportar como pdf"
+
+#~ msgid "Loading Contact..."
+#~ msgstr "Cargando Contacto..."
+
+#~ msgid "Please Wait"
+#~ msgstr "Por Favor Espere"
+
+#~ msgid "Add new contact"
+#~ msgstr "Agregar nuevo contacto"
+
+#~ msgid "Edit Contact \"{0}\""
+#~ msgstr "Editar Contacto \"{0}\""
+
+#~ msgid "Please wait a moment..."
+#~ msgstr "Espere un momento..."
+
+#~ msgid "Saving Contact"
+#~ msgstr "Guardando Contacto"
+
+#~ msgid "Failed"
+#~ msgstr "Falló"
+
+#~ msgid "Could not save contact."
+#~ msgstr "No se puede guardar contacto."
+
+#~ msgid "Either "
+#~ msgstr "Cualquiera"
+
+#~ msgid "Start date is not valid"
+#~ msgstr "La fecha de inicio no es válido"
+
+#~ msgid "Please fix the errors noted."
+#~ msgstr "Por favor los errores mostrados."
+
+#~ msgid "Deleting contact..."
+#~ msgstr "Borrando contacto..."
+
+#~ msgid "Some error occured while trying to delete the contact."
+#~ msgstr "Ocurrió un error al intentar borrar el contacto."
+
+#~ msgid "Custom Fields"
+#~ msgstr "Campos Personalizados"
+
+#~ msgid "Link"
+
+#~ msgid_plural "Links [%d]"
+#~ msgstr[0] "Enlace"
+#~ msgstr[1] "Enlaces [%d]"
