@@ -1198,3 +1198,4 @@ Tine.Felamimail.MessageEditDialog.openWindow = function (config) {
     });
     return window;
 };
+
