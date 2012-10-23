@@ -1214,4 +1214,3 @@ msgstr "Compartilhadas"
 #: 84
 msgid "Signature image size cannot exceed 16384 bytes."
 msgstr "O tamanho da imagem da assinatura não pode exceder 16384 bytes."
-
