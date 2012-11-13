@@ -265,7 +265,6 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Fol
                     'cache_job_actions_est' => 0,
                     'cache_job_actions_done' => 0
                 ));
-
                 if (Tinebase_Core::isLogLevel(Zend_Log::INFO)) Tinebase_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ 
                     . $ex->getMessage());
             }

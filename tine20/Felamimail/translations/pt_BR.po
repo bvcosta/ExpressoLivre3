@@ -1225,3 +1225,6 @@ msgstr "Não foi possível criar a pasta"
 msgid "perhaps it already exists."
 msgstr "talvez ela já exista."
 
+#: Backend/Cache/Imap/Folder.php:252
+msgid "Shared Folders"
+msgstr "Compartilhadas"
