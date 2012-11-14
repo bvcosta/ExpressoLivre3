@@ -57,7 +57,7 @@
                 <field>
                     <name>percent</name>
                     <type>integer</type>
-                    <length>4</length>
+                  <!--  <length>4</length> returning error in postgres db -->
                 </field>    
                 <field>
                     <name>completed</name>
