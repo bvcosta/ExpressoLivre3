@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tine 2.0 Messenger\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-14 15:06-0300\n"
-"PO-Revision-Date: 2012-11-14 15:06-0300\n"
+"POT-Creation-Date: 2012-11-19 15:04-0300\n"
+"PO-Revision-Date: 2012-11-19 15:04-0300\n"
 "Last-Translator: Marcio Albuquerque <marcio.lima.albuquerque@gmail.com>\n"
 "Language-Team: SERPRO Salvador <marcio.albuquerque@serpro.gov.br>\n"
 "Language: \n"
@@ -229,7 +229,7 @@ msgstr "Grupo criado com sucesso"
 
 #: Messenger/js/Window.js:21
 #: Messenger/js/Layout.js:46
-#: Messenger/js/Layout.js:430
+#: Messenger/js/Layout.js:413
 msgid "Add Group"
 msgstr "Adicionar Grupo"
 
@@ -283,7 +283,7 @@ msgid "Actions"
 msgstr "Ações"
 
 #: Messenger/js/Layout.js:38
-#: Messenger/js/Layout.js:354
+#: Messenger/js/Layout.js:337
 msgid "Add Contact"
 msgstr "Adicionar Contato"
 
@@ -292,8 +292,8 @@ msgid "Logout"
 msgstr "Sair"
 
 #: Messenger/js/Layout.js:117
-msgid "your Status"
-msgstr "seu Status"
+msgid "Type your Status"
+msgstr "Digite seu Status"
 
 #: Messenger/js/Layout.js:118
 msgid "press ENTER after"
@@ -315,53 +315,53 @@ msgstr "Não Perturbe"
 msgid "Unavailable"
 msgstr "Indisponível"
 
-#: Messenger/js/Layout.js:372
+#: Messenger/js/Layout.js:355
 msgid "JID"
 msgstr "JID"
 
-#: Messenger/js/Layout.js:379
-#: Messenger/js/Layout.js:438
+#: Messenger/js/Layout.js:362
+#: Messenger/js/Layout.js:421
 msgid "Name"
 msgstr "Nome"
 
-#: Messenger/js/Layout.js:384
+#: Messenger/js/Layout.js:367
 msgid "Group"
 msgstr "Grupo"
 
-#: Messenger/js/Layout.js:390
+#: Messenger/js/Layout.js:373
 msgid "Select a group"
 msgstr "Selecione um grupo"
 
-#: Messenger/js/Layout.js:400
-#: Messenger/js/Layout.js:443
+#: Messenger/js/Layout.js:383
+#: Messenger/js/Layout.js:426
 msgid "Add"
 msgstr "Incluir"
 
-#: Messenger/js/Layout.js:476
+#: Messenger/js/Layout.js:459
 msgid "Join Groupchat"
 msgstr "Entrar em Sala de Bate-papo"
 
-#: Messenger/js/Layout.js:485
+#: Messenger/js/Layout.js:468
 msgid "Identity"
 msgstr "Identidade"
 
-#: Messenger/js/Layout.js:491
+#: Messenger/js/Layout.js:474
 msgid "Host"
 msgstr "Anfitrião"
 
-#: Messenger/js/Layout.js:496
+#: Messenger/js/Layout.js:479
 msgid "Room"
 msgstr "Sala"
 
-#: Messenger/js/Layout.js:501
+#: Messenger/js/Layout.js:484
 msgid "Nickname"
 msgstr "Apelido"
 
-#: Messenger/js/Layout.js:507
+#: Messenger/js/Layout.js:490
 msgid "Password"
 msgstr "Senha"
 
-#: Messenger/js/Layout.js:511
+#: Messenger/js/Layout.js:494
 msgid "Join"
 msgstr "Entrar"
 
