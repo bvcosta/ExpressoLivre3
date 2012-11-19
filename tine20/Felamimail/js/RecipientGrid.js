@@ -158,7 +158,7 @@ Tine.Felamimail.RecipientGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         });
         
         // init recipients (on reply/reply to all)
-        this.syncRecipientsToStore(['to', 'cc']);
+        this.syncRecipientsToStore(['to', 'cc', 'bcc']);
         
         this.store.add(new Ext.data.Record({type: 'to', 'address': ''}));
         
@@ -182,7 +182,7 @@ Tine.Felamimail.RecipientGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     // need to update record because we relay blur event and it might not be updated otherwise
                     if (this.activeEditor) {
                         var value = combo.getValue();
-                        if (this.activeEditor.record.get('address') != value) {
+                        if (value !== null && this.activeEditor.record.get('address') != value) {
                             this.activeEditor.record.set('address', value);
                         }
                     }

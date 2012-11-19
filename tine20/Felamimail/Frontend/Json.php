@@ -50,6 +50,20 @@ class Felamimail_Frontend_Json extends Tinebase_Frontend_Json_Abstract
         
         return $result;
     }
+    
+    
+      /**
+     * get ACLs for a folder
+     *
+     * @param string $accountId
+     * @return array
+     */
+    public function getSenders($accountId)
+    {
+         $result = Felamimail_Controller_Folder::getInstance()->getUsersWithSendAsAcl($accountId);
+        
+        return $result;
+    }
   
     /**
      * set ACLs for a folder
@@ -188,7 +202,7 @@ class Felamimail_Frontend_Json extends Tinebase_Frontend_Json_Abstract
      */
     public function updateFolderCache($accountId, $folderName)
     {
-        $result = Felamimail_Controller_Cache_Folder::getInstance()->update($accountId, $folderName, TRUE);
+        $result = Felamimail_Controller_Folder::getInstance()->updateCacheFolder($accountId, $folderName, TRUE);
         return $this->_multipleRecordsToJson($result);
     }
     
@@ -602,8 +616,14 @@ class Felamimail_Frontend_Json extends Tinebase_Frontend_Json_Abstract
         }
         
         $supportedFlags = Felamimail_Controller_Message_Flags::getInstance()->getSupportedFlags();
+        $extraSenderAccounts = array();
+        
+        foreach($accounts['results'] as $account){
+             $extraSenderAccounts = Felamimail_Controller_Folder::getInstance()->getUsersWithSendAsAcl($account['id']);
+        }
         
         $result = array(
+            'extraSenderAccounts' => $extraSenderAccounts,
             'accounts'              => $accounts,
             'supportedFlags'        => array(
                 'results'       => $supportedFlags,

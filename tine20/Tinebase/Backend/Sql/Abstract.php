@@ -240,6 +240,8 @@ abstract class Tinebase_Backend_Sql_Abstract extends Tinebase_Backend_Abstract i
         
         $this->_traitGroup($select);
 
+    //    throw new Tinebase_Exception($select);
+        
         $stmt = $this->_db->query($select);
         $queryResult = $stmt->fetch();
         $stmt->closeCursor();
@@ -454,7 +456,7 @@ abstract class Tinebase_Backend_Sql_Abstract extends Tinebase_Backend_Abstract i
             $_pagination->appendSort($select);
             
             $rows = $this->_fetch($select, self::FETCH_ALL);
-            
+ 
             return $this->_rawDataToRecordSet($rows);
         }
     }
@@ -487,17 +489,21 @@ abstract class Tinebase_Backend_Sql_Abstract extends Tinebase_Backend_Abstract i
                 ? array_merge(array_keys($this->_foreignTables), array($this->_defaultCountCol)) : '*';
             
             $select = $this->_getSelect($subselectCols);
+            
+            $this->_traitGroup($select);          
             $this->_addFilter($select, $_filter);
+
             $countSelect = $this->_db->select()->from($select, $searchCountCols);
             
         } else {
             $countSelect = $this->_getSelect($searchCountCols);
             $this->_addFilter($countSelect, $_filter);
         }
+
         
-        if (Tinebase_Core::isLogLevel(Zend_Log::TRACE)) Tinebase_Core::getLogger()->trace(__METHOD__ . '::' . __LINE__ . ' ' . $countSelect);
         
-        $this->_traitGroup($countSelect);
+        if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->trace(__METHOD__ . '::' . __LINE__ . ' SELECT_COUNT ' . $countSelect);
+        
         if (! empty($this->_additionalSearchCountCols)) {     	
             $result = $this->_db->fetchRow($countSelect);
         } else {
@@ -1245,7 +1251,7 @@ abstract class Tinebase_Backend_Sql_Abstract extends Tinebase_Backend_Abstract i
     {
     	$group = $select->getPart(Zend_Db_Select::GROUP);
     
-    	if (empty($group)) return;
+    	//if (empty($group)) return;
     
     	$order = $select->getPart(Zend_Db_Select::ORDER);
     
@@ -1283,6 +1289,11 @@ abstract class Tinebase_Backend_Sql_Abstract extends Tinebase_Backend_Abstract i
     					{
     						$group[] = $element;
     					}
+                                        // adds expression column into group by clause (expression) in addressbook image
+                                        //substr($column[1], 0, 30) == ("(CASE WHEN \"addressbook_image\"")
+                                        else if (substr($column[1], 0, 10) == ("(CASE WHEN")){
+                                            $group[] = $column[1]; 
+                                        }
     				}
     			}
     		}

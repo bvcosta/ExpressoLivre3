@@ -44,6 +44,7 @@ Tine.Felamimail.Model.Message = Tine.Tinebase.data.Record.create([
       { name: 'reading_conf' },
       { name: 'smime' },
       { name: 'signature_info' },
+      { name: 'importance' },
       { name: 'embedded_images' } 
     ], {
     appName: 'Felamimail',
@@ -58,6 +59,22 @@ Tine.Felamimail.Model.Message = Tine.Tinebase.data.Record.create([
     containerName: 'Folder',
     containersName: 'Folders',
     
+    /**
+     * check if message has impertance flag
+     * 
+     * @param  {String} flag
+     * @return {Boolean}
+     */
+    isImportant: function() {
+        var value = this.get('importance');
+        if (value == true){
+            return true;
+        }
+        
+        return false;
+        
+    },
+
     /**
      * check if message has given flag
      * 
@@ -817,5 +834,6 @@ Tine.Felamimail.Model.Acl = Ext.data.Record.create([
     {name: 'account_id'},
     {name: 'account_name', sortType: Tine.Tinebase.common.accountSortType},
     {name: 'readacl',    type: 'boolean'},
-    {name: 'writeacl',     type: 'boolean'}
+    {name: 'writeacl',     type: 'boolean'},
+    {name: 'sendacl',     type: 'boolean'}
 ]);

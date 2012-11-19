@@ -550,28 +550,31 @@ msgstr "Iniciar video chat"
 
 #~ msgid "Action"
 
+#~ msgid "Email Accounts"
+
+#~ msgid_plural "Email Accounts"
+#~ msgstr[0] "Conta de E-mail"
+#~ msgstr[1] "Contas de E-mail"
+
+#~ msgid "Action"
 #~ msgid_plural "Actions"
 #~ msgstr[0] "Ações"
 #~ msgstr[1] "Ações"
-
 #~ msgid "Preference"
-
 #~ msgid_plural "Preferences"
 #~ msgstr[0] "Preferências"
 #~ msgstr[1] "Preferências"
-
 #~ msgid ""
 #~ "You're logged in Messenger. If you leave the page, Messenger will "
 #~ "disconnect!"
 #~ msgstr ""
 #~ "Você está conectado no Messenger. Se sair da página, o Messenger será "
 #~ "desconectado!"
-
 #~ msgid " was successfully removed!"
 #~ msgstr " foi excluído com sucesso!"
 
 #~ msgid "Configuration"
 #~ msgstr "Configurações"
-
 #~ msgid "Available"
 #~ msgstr "Disponível"
+

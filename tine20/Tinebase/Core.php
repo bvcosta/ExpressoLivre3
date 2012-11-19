@@ -922,13 +922,21 @@ class Tinebase_Core
                 // check if cookie or pref with language is available
                 if (isset($_COOKIE['TINE20LOCALE'])) {
                     $localeString = $_COOKIE['TINE20LOCALE'];
-                    if (self::isLogLevel(Zend_Log::DEBUG)) self::getLogger()->debug(__METHOD__ . '::' . __LINE__
-                        . " Got locale from cookie: '$localeString'");
                     
-                } elseif (isset($session->currentAccount)) {
-                    $localeString = self::getPreference()->getValue(Tinebase_Preference::LOCALE, 'auto');
-                    if (self::isLogLevel(Zend_Log::DEBUG)) self::getLogger()->debug(__METHOD__ . '::' . __LINE__ 
-                        . " Got locale from preference: '$localeString'");
+                    if (self::isLogLevel(Zend_Log::DEBUG)) {
+                        self::getLogger()->debug(__METHOD__ . '::' . __LINE__ . " Got locale from cookie: '$localeString'");
+                    }                    
+                } 
+                else {
+                  if (isset($session->currentAccount)) {
+                      $localeString = self::getPreference()->getValue(Tinebase_Preference::LOCALE, 'auto');
+                      if (self::isLogLevel(Zend_Log::DEBUG)) {
+                          self::getLogger()->debug(__METHOD__ . '::' . __LINE__ . " Got locale from preference: '$localeString'");
+                      }
+                  }
+                  else {
+                    $localeString = new Zend_Locale();
+                  }
                 }
             }
             
