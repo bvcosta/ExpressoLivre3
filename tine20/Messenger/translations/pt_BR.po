@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tine 2.0 Messenger\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-20 17:09-0300\n"
-"PO-Revision-Date: 2012-11-20 17:09-0300\n"
+"POT-Creation-Date: 2012-11-20 17:21-0300\n"
+"PO-Revision-Date: 2012-11-20 17:22-0300\n"
 "Last-Translator: Marcio Albuquerque <marcio.lima.albuquerque@gmail.com>\n"
 "Language-Team: SERPRO Salvador <marcio.albuquerque@serpro.gov.br>\n"
 "Language: \n"
@@ -230,7 +230,7 @@ msgstr "Grupo criado com sucesso"
 #: Messenger/js/Window.js:21
 #: Messenger/js/Layout.js:46
 #: Messenger/js/Layout.js:268
-#: Messenger/js/Layout.js:613
+#: Messenger/js/Layout.js:596
 msgid "Add Group"
 msgid_plural "Add Group"
 msgstr[0] "Adicionar Grupo"
@@ -287,7 +287,7 @@ msgstr "Ações"
 
 #: Messenger/js/Layout.js:38
 #: Messenger/js/Layout.js:259
-#: Messenger/js/Layout.js:537
+#: Messenger/js/Layout.js:520
 msgid "Add Contact"
 msgid_plural "Add Contact"
 msgstr[0] "Adicionar Contato"
@@ -301,8 +301,8 @@ msgstr[0] "Sair"
 msgstr[1] "Sair"
 
 #: Messenger/js/Layout.js:117
-msgid "your Status"
-msgstr "seu Status"
+msgid "Type your Status"
+msgstr "Digite seu Status"
 
 #: Messenger/js/Layout.js:118
 msgid "press ENTER after"
@@ -336,53 +336,53 @@ msgid_plural "Preferences"
 msgstr[0] "Preferências"
 msgstr[1] "Preferências"
 
-#: Messenger/js/Layout.js:555
+#: Messenger/js/Layout.js:538
 msgid "JID"
 msgstr "JID"
 
-#: Messenger/js/Layout.js:562
-#: Messenger/js/Layout.js:621
+#: Messenger/js/Layout.js:545
+#: Messenger/js/Layout.js:604
 msgid "Name"
 msgstr "Nome"
 
-#: Messenger/js/Layout.js:567
+#: Messenger/js/Layout.js:550
 msgid "Group"
 msgstr "Grupo"
 
-#: Messenger/js/Layout.js:573
+#: Messenger/js/Layout.js:556
 msgid "Select a group"
 msgstr "Selecione um grupo"
 
-#: Messenger/js/Layout.js:583
-#: Messenger/js/Layout.js:626
+#: Messenger/js/Layout.js:566
+#: Messenger/js/Layout.js:609
 msgid "Add"
 msgstr "Incluir"
 
-#: Messenger/js/Layout.js:659
+#: Messenger/js/Layout.js:642
 msgid "Join Groupchat"
 msgstr "Entrar em Sala de Bate-papo"
 
-#: Messenger/js/Layout.js:668
+#: Messenger/js/Layout.js:651
 msgid "Identity"
 msgstr "Identidade"
 
-#: Messenger/js/Layout.js:674
+#: Messenger/js/Layout.js:657
 msgid "Host"
 msgstr "Anfitrião"
 
-#: Messenger/js/Layout.js:679
+#: Messenger/js/Layout.js:662
 msgid "Room"
 msgstr "Sala"
 
-#: Messenger/js/Layout.js:684
+#: Messenger/js/Layout.js:667
 msgid "Nickname"
 msgstr "Apelido"
 
-#: Messenger/js/Layout.js:690
+#: Messenger/js/Layout.js:673
 msgid "Password"
 msgstr "Senha"
 
-#: Messenger/js/Layout.js:694
+#: Messenger/js/Layout.js:677
 msgid "Join"
 msgstr "Entrar"
 
@@ -569,8 +569,12 @@ msgstr "Iniciar video chat"
 #~ msgstr[0] "Conta de E-mail"
 #~ msgstr[1] "Contas de E-mail"
 
-#~ msgid "You're logged in Messenger. If you leave the page, Messenger will disconnect!"
-#~ msgstr "Você está conectado no Messenger. Se sair da página, o Messenger será desconectado!"
+#~ msgid ""
+#~ "You're logged in Messenger. If you leave the page, Messenger will "
+#~ "disconnect!"
+#~ msgstr ""
+#~ "Você está conectado no Messenger. Se sair da página, o Messenger será "
+#~ "desconectado!"
 
 #~ msgid " was successfully removed!"
 #~ msgstr " foi excluído com sucesso!"
