@@ -5,26 +5,19 @@
  * @package     Felamimail
  * @subpackage  Controller
  * @license     http://www.gnu.org/licenses/agpl.html AGPL Version 3
- * @author      Philipp Schüle <p.schuele@metaways.de>
- * @copyright   Copyright (c) 2009-2011 Metaways Infosystems GmbH (http://www.metaways.de)
- * 
- * @todo        parse mail body and add <a> to telephone numbers?
+ * @author      Cassiano Dal Pizzol <cassiano.dalpizzol@serpro.gov.br>
+ * @copyright   Copyright (c) 2009-2013 Serpro (http://www.serpro.gov.br)
+ *
  */
 
-/**
- * message controller for Felamimail
- *
- * @package     Felamimail
- * @subpackage  Controller
- */
-class Felamimail_Controller_Message extends Felamimail_Controller_Message_Abstract
+abstract class Felamimail_Controller_Message_Abstract extends Tinebase_Controller_Record_Abstract
 {
-     /**
-     * holds the instance of the singleton
+ /**
+     * application name (is needed in checkRight())
      *
-     * @var Felamimail_Controller_Message
+     * @var string
      */
-    private static $_instance = NULL;
+    protected $_applicationName = 'Felamimail';
     
     /**
      * cache controller
@@ -36,7 +29,7 @@ class Felamimail_Controller_Message extends Felamimail_Controller_Message_Abstra
     /**
      * message backend
      *
-     * @var Felamimail_Backend_Cache_Sql_Message
+     * @var Felamimail_Backend_Cache_Message
      */
     protected $_backend = NULL;
     
@@ -77,44 +70,7 @@ class Felamimail_Controller_Message extends Felamimail_Controller_Message_Abstra
     protected $_supportedForeignContentTypes = array(
         'Calendar'     => Felamimail_Model_Message::CONTENT_TYPE_CALENDAR,
         'Addressbook'  => Felamimail_Model_Message::CONTENT_TYPE_VCARD,
-        'Webconference'=> Felamimail_Model_Message::CONTENT_TYPE_WEBCONFERENCE
     );
-    
-    /**
-     * the constructor
-     *
-     * don't use the constructor. use the singleton
-     */
-    private function __construct() 
-    {
-        $this->_modelName = 'Felamimail_Model_Message';
-        $this->_doContainerACLChecks = FALSE;
-        $this->_backend = Felamimail_Backend_Message::getInstance();        
-        $this->_currentAccount = Tinebase_Core::getUser();        
-        $this->_cacheController = Felamimail_Controller_Cache_Message::getInstance();
-    }
-    
-    /**
-     * don't clone. Use the singleton.
-     *
-     */
-    private function __clone() 
-    {        
-    }
-    
-    /**
-     * the singleton pattern
-     *
-     * @return Felamimail_Controller_Message
-     */
-    public static function getInstance() 
-    {
-        if (self::$_instance === NULL) {            
-            self::$_instance = new Felamimail_Controller_Message();
-        }
-        
-        return self::$_instance;
-    }
     
     /**
      * Removes accounts where current user has no access to
@@ -245,8 +201,6 @@ class Felamimail_Controller_Message extends Felamimail_Controller_Message_Abstra
         $body        = $this->getMessageBody($_message, $_partId, $mimeType, $_account, true);
         $signature   = $this->getDigitalSignature($_message, $_partId);
         
-        $structure = $_message->getPartStructure($_partId, FALSE);
-        
         if ($_partId === null) {
             $message = $_message;
             
@@ -256,7 +210,7 @@ class Felamimail_Controller_Message extends Felamimail_Controller_Message_Abstra
             $message->signature_info   = $signature;
         } else {
             // create new object for rfc822 message
-            //$structure = $_message->getPartStructure($_partId, FALSE);
+            $structure = $_message->getPartStructure($_partId, FALSE);
         
             $message = new Felamimail_Model_Message(array(
                 'messageuid'  => $_message->messageuid,
@@ -271,7 +225,7 @@ class Felamimail_Controller_Message extends Felamimail_Controller_Message_Abstra
             ));
         
             $message->parseHeaders($headers);
-            $message->parseSmime($structure);
+            $message->parseSmime($message->structure);
         
             $structure = array_key_exists('messageStructure', $structure) ? $structure['messageStructure'] : $structure;
             $message->parseStructure($structure);
@@ -358,11 +312,6 @@ class Felamimail_Controller_Message extends Felamimail_Controller_Message_Abstra
                     'originator'     => $_message->from_email,
                     'userAgent'      => $userAgent,
                 ));
-                break;
-            case Felamimail_Model_Message::CONTENT_TYPE_WEBCONFERENCE:
-                $partData = unserialize($decodedContent)->toArray();
-                    
-                
                 break;
             default:
                 if (Tinebase_Core::isLogLevel(Zend_Log::NOTICE)) Tinebase_Core::getLogger()->notice(__METHOD__ . '::' . __LINE__ . ' Could not create iMIP of content type ' . $part->type);
@@ -646,7 +595,6 @@ class Felamimail_Controller_Message extends Felamimail_Controller_Message_Abstra
             $body = $this->_getDecodedBodyContent($bodyPart, $partStructure);
             
             if ($partStructure['contentType'] != Zend_Mime::TYPE_TEXT) {
-                $body = $this->_getDecodedBodyImages($_message->getId(), $body);
                 $body = $this->_purifyBodyContent($body);
             }
             
@@ -789,7 +737,7 @@ class Felamimail_Controller_Message extends Felamimail_Controller_Message_Abstra
     protected function _purifyBodyContent($_content)
     {
         if (!defined('HTMLPURIFIER_PREFIX')) {
-            define('HTMLPURIFIER_PREFIX', realpath(dirname(__FILE__) . '/../../library/HTMLPurifier'));
+            define('HTMLPURIFIER_PREFIX', realpath(dirname(__FILE__) . '/../../../library/HTMLPurifier'));
         }
         
         $config = Tinebase_Core::getConfig();
@@ -819,34 +767,6 @@ class Felamimail_Controller_Message extends Felamimail_Controller_Message_Abstra
         
         return $content;
     }
-    
-       /**
-     * convert image cids to download image links
-     *
-     * @param string $_content
-     * @return string
-     */
-    protected function _getDecodedBodyImages($_messageId, $_content)
-    {
-        $found = preg_match_all('/<img.[^>]*src=[\"|\']cid:(.[^>\"\']*).[^>]*>/',$_content,$matches,PREG_SET_ORDER);
-        if ($found) {
-            Tinebase_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Replacing cids from multipart messages with images');
-            foreach ($matches as $match) {
-                $pid = '';
-                foreach ($this->_attachments as $attachment) {
-                    if ($attachment['cid']==='<'.$match[1].'>') {
-                        $pid = $attachment['partId'];
-                        break;
-                    }
-                }
-                $src = "index.php?method=Felamimail.downloadAttachment&amp;messageId=".$_messageId."&amp;partId=".$pid;
-                $_content = preg_replace("/cid:$match[1]/",$src,$_content);
-            }
-        }
-
-        return $_content;
-    }
-
     
     /**
      * get message headers
@@ -917,7 +837,7 @@ class Felamimail_Controller_Message extends Felamimail_Controller_Message_Abstra
     protected function _getBackendAndSelectFolder($_folderId = NULL, &$_folder = NULL, $_select = TRUE, Felamimail_Backend_ImapProxy $_imapBackend = NULL)
     {
         if ($_folder === NULL || empty($_folder)) {
-            $folderBackend  = new Felamimail_Backend_Folder();
+            $folderBackend  = Felamimail_Backend_Folder::getInstance();
             $_folder = $folderBackend->get($_folderId);
         }
         
@@ -1083,4 +1003,5 @@ class Felamimail_Controller_Message extends Felamimail_Controller_Message_Abstra
         
         return $this->_punycodeConverter;
     }
+    
 }

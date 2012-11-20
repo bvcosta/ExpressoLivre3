@@ -15,71 +15,8 @@
  * @package     Felamimail
  * @subpackage  Controller
  */
-class Felamimail_Controller_Cache_Message extends Felamimail_Controller_Message
+class Felamimail_Controller_Cache_Message
 {
-    /**
-     * number of imported messages in one caching step
-     *
-     * @var integer
-     */
-    protected $_importCountPerStep = 50;
-    
-    /**
-     * number of fetched messages for one step of flag sync
-     *
-     * @var integer
-     */
-    protected $_flagSyncCountPerStep = 1000;
-    
-    /**
-     * max size of message to cache body for
-     * 
-     * @var integer
-     */
-    protected $_maxMessageSizeToCacheBody = 2097152;
-    
-    /**
-     * initial cache status (used by updateCache and helper funcs)
-     * 
-     * @var string
-     */
-    protected $_initialCacheStatus = NULL;
-
-    /**
-     * message sequence in cache (used by updateCache and helper funcs)
-     * 
-     * @var integer
-     */
-    protected $_cacheMessageSequence = NULL;
-
-    /**
-     * message sequence on imap server (used by updateCache and helper funcs)
-     * 
-     * @var integer
-     */
-    protected $_imapMessageSequence = NULL;
-
-    /**
-     * start of cache update in seconds+microseconds/unix timestamp (used by updateCache and helper funcs)
-     * 
-     * @var float
-     */
-    protected $_timeStart = NULL;
-    
-    /**
-     * time elapsed in seconds (used by updateCache and helper funcs)
-     * 
-     * @var integer
-     */
-    protected $_timeElapsed = 0;
-
-    /**
-     * time for update in seconds (used by updateCache and helper funcs)
-     * 
-     * @var integer
-     */
-    protected $_availableUpdateTime = 0;
-    
     /**
      * holds the instance of the singleton
      *
@@ -92,9 +29,8 @@ class Felamimail_Controller_Cache_Message extends Felamimail_Controller_Message
      *
      * don't use the constructor. use the singleton
      */
-    private function __construct() {
-        $this->_backend = new Felamimail_Backend_Cache_Sql_Message();
-        $this->_currentAccount = Tinebase_Core::getUser();
+    private function __construct()
+    {
     }
     
     /**
@@ -113,9 +49,11 @@ class Felamimail_Controller_Cache_Message extends Felamimail_Controller_Message
     public static function getInstance() 
     {
         if (self::$_instance === NULL) {
-            self::$_instance = new Felamimail_Controller_Cache_Message();
+            $adapter = Tinebase_Core::getConfig()->messagecache;
+            $adapter = (empty($adapter))?'sql':$adapter;
+            $classname = 'Felamimail_Controller_Cache_' . ucfirst($adapter) . '_Message';
+            self::$_instance = $classname::getInstance();
         }
-        
         return self::$_instance;
     }
     
