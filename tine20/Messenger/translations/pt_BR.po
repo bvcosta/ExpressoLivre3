@@ -502,14 +502,17 @@ msgid "Notifications"
 msgstr "Notificações"
 
 #: Messenger/js/ConfigWindow.js:28
+#, fuzzy
 msgid "Show notifications"
 msgstr "Exibir notificações"
 
 #: Messenger/js/ConfigWindow.js:39
+#, fuzzy
 msgid "History"
 msgstr "Histórico do Chat"
 
 #: Messenger/js/ConfigWindow.js:69
+#, fuzzy
 msgid "Custom Name"
 msgstr "Nome Personalizado"
 
@@ -573,12 +576,8 @@ msgstr "Iniciar video chat"
 #~ msgstr[0] "Conta de E-mail"
 #~ msgstr[1] "Contas de E-mail"
 
-#~ msgid ""
-#~ "You're logged in Messenger. If you leave the page, Messenger will "
-#~ "disconnect!"
-#~ msgstr ""
-#~ "Você está conectado no Messenger. Se sair da página, o Messenger será "
-#~ "desconectado!"
+#~ msgid "You're logged in Messenger. If you leave the page, Messenger will disconnect!"
+#~ msgstr "Você está conectado no Messenger. Se sair da página, o Messenger será desconectado!"
 
 #~ msgid " was successfully removed!"
 #~ msgstr " foi excluído com sucesso!"

@@ -506,6 +506,7 @@ msgid "Notifications"
 msgstr "Notificaciones"
 
 #: Messenger/js/ConfigWindow.js:28
+#, fuzzy
 msgid "Show notifications"
 msgstr "Mostrar notificaciones"
 
@@ -515,6 +516,7 @@ msgid "History"
 msgstr "Historial de Chat"
 
 #: Messenger/js/ConfigWindow.js:69
+#, fuzzy
 msgid "Custom Name"
 msgstr "Nombre personalizado"
 
@@ -524,7 +526,7 @@ msgstr "Login"
 
 #: Messenger/js/ConfigWindow.js:88
 msgid "Save"
-msgstr "Guardar"
+msgstr "GUardar"
 
 #: Messenger/js/ConfigWindow.js:92
 msgid "Cancel"
@@ -559,10 +561,10 @@ msgid "was not removed"
 msgstr "no fue eliminado"
 
 #: Messenger/js/Chat.js:22
+#, fuzzy
 msgid "Options"
-msgstr "Opciones"
+msgstr "Acciones"
 
 #: Messenger/js/Chat.js:39
 msgid "Start video chat"
 msgstr "Iniciar chat de vídeo"
-
