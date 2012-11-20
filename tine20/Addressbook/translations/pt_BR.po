@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tine 2.0 - Addressbook\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-17 22:12+0100\n"
-"PO-Revision-Date: 2012-11-20 17:05-0300\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2012-11-20 18:32-0300\n"
 "Last-Translator: Marcio Albuquerque <marcio.lima.albuquerque@gmail.com>\n"
 "Language-Team: Tine 2.0 Translators\n"
 "MIME-Version: 1.0\n"
@@ -464,6 +464,7 @@ msgstr "End token mode"
 #: js/ContactFilterModel.js:35
 #: js/Model.js:94
 #: js/Model.js:133
+#, fuzzy
 msgid "Contact"
 msgid_plural "Contacts"
 msgstr[0] "Contato"

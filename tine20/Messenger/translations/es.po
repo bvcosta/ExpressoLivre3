@@ -2,10 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tine 2.0 Messenger\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-20 18:03-0300\n"
-"PO-Revision-Date: 2012-11-20 18:03-0300\n"
+"POT-Creation-Date: 2012-11-20 18:31-0300\n"
+"PO-Revision-Date: 2012-11-20 18:31-0300\n"
 "Last-Translator: Marcio Albuquerque <marcio.lima.albuquerque@gmail.com>\n"
-"Language-Team: Tine 2.0 Translators\n"
+"Language-Team: SERPRO Expresso <marcio.albuquerque@serpro.gov.br>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -105,9 +105,8 @@ msgid "auto status (idle)"
 msgstr "el estado automático (en espera)"
 
 #: Messenger/js/LogHandler.js:95
-#, fuzzy
 msgid "is on-line"
-msgstr "Online"
+msgstr "no está en línea"
 
 #: Messenger/js/LogHandler.js:112
 msgid "The intended recipient is temporarily unavailable."
@@ -128,9 +127,8 @@ msgstr "ERROR DEL SERVIDOR"
 
 #: Messenger/js/LogHandler.js:143
 #: Messenger/js/LogHandler.js:144
-#, fuzzy
 msgid "Accept your subscription"
-msgstr "Suscripción"
+msgstr "Acepta tu suscripción"
 
 #: Messenger/js/LogHandler.js:149
 msgid "Allow"
@@ -141,14 +139,12 @@ msgid "Deny"
 msgstr "Negar"
 
 #: Messenger/js/LogHandler.js:152
-#, fuzzy
 msgid "Subscription Approval"
-msgstr "Suscripción"
+msgstr "Aprobación de Suscripción"
 
 #: Messenger/js/LogHandler.js:153
-#, fuzzy
 msgid "wants to subscribe you."
-msgstr "quiere enviar un archivo:"
+msgstr "quiere suscribirse."
 
 #: Messenger/js/LogHandler.js:172
 msgid "Denied/Removed your subscription"
@@ -197,7 +193,7 @@ msgstr "Cancelar 503: Servicio no disponible."
 #: Messenger/js/ChatHandler.js:126
 #: Messenger/js/ChatHandler.js:127
 msgid "Info"
-msgstr "información"
+msgstr "Información"
 
 #: Messenger/js/ChatHandler.js:18
 msgid "Group chat in room"
@@ -294,7 +290,6 @@ msgid "Expresso Messenger"
 msgstr "Expresso Messenger"
 
 #: Messenger/js/Layout.js:32
-#, fuzzy
 msgid "Actions"
 msgstr "Acciones"
 
@@ -503,7 +498,6 @@ msgid "Subscription"
 msgstr "Suscripción"
 
 #: Messenger/js/ConfigWindow.js:8
-#, fuzzy
 msgid "Preferences"
 msgstr "Preferencias"
 
@@ -512,7 +506,6 @@ msgid "Notifications"
 msgstr "Notificaciones"
 
 #: Messenger/js/ConfigWindow.js:28
-#, fuzzy
 msgid "Show notifications"
 msgstr "Mostrar notificaciones"
 
@@ -550,14 +543,12 @@ msgstr "Exitoso"
 #: Messenger/js/RosterHandler.js:301
 #: Messenger/js/RosterHandler.js:358
 #: Messenger/js/RosterHandler.js:363
-#, fuzzy
 msgid "The group"
-msgstr "Seleccione un grupo de"
+msgstr "El grupo"
 
 #: Messenger/js/RosterHandler.js:302
-#, fuzzy
 msgid "was successfully renamed to"
-msgstr "se ha eliminado correctamente"
+msgstr "fue renombrada con éxito para"
 
 #: Messenger/js/RosterHandler.js:307
 msgid " already exist. It was not renamed."
