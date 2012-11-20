@@ -169,11 +169,11 @@ msgstr "Los mensajes serán enviados fuera de línea"
 
 #: Messenger/js/ChatHandler.js:233
 msgid " stopped typing!"
-msgstr "escrito detenido!"
+msgstr " dejó de escribir!"
 
 #: Messenger/js/ChatHandler.js:235
 msgid " is typing..."
-msgstr "está escribiendo..."
+msgstr " está escribiendo..."
 
 #: Messenger/js/Window.js:18
 msgid "Group created successfully"
@@ -181,9 +181,13 @@ msgstr "Fecha de creación con éxito"
 
 #: Messenger/js/Window.js:21
 #: Messenger/js/Layout.js:46
-#: Messenger/js/Layout.js:413
+#: Messenger/js/Layout.js:268
+#: Messenger/js/Layout.js:596
+#, fuzzy
 msgid "Add Group"
-msgstr "Agregar grupo"
+msgid_plural "Add Group"
+msgstr[0] "Agregar grupo"
+msgstr[1] "Agregar grupo"
 
 #: Messenger/js/Window.js:22
 msgid "The group already exists"
@@ -201,6 +205,10 @@ msgstr "Añadir amigo"
 #: Messenger/js/Window.js:62
 msgid "Buddy not added"
 msgstr "Amigo no añade"
+
+#: Messenger/js/Messenger.js:27
+msgid "ME"
+msgstr "YO"
 
 #: Messenger/js/Messenger.js:74
 msgid "Messenger"
@@ -235,17 +243,26 @@ msgid "Actions"
 msgstr "Acciones"
 
 #: Messenger/js/Layout.js:38
-#: Messenger/js/Layout.js:337
+#: Messenger/js/Layout.js:259
+#: Messenger/js/Layout.js:520
+#, fuzzy
 msgid "Add Contact"
-msgstr "Añadir este contacto"
+msgid_plural "Add Contact"
+msgstr[0] "Añadir este contacto"
+msgstr[1] "Añadir este contacto"
 
 #: Messenger/js/Layout.js:55
+#: Messenger/js/Layout.js:278
+#, fuzzy
 msgid "Logout"
-msgstr "Cerrar sesión"
+msgid_plural "Logout"
+msgstr[0] "Cerrar sesión"
+msgstr[1] "Cerrar sesión"
 
 #: Messenger/js/Layout.js:117
+#, fuzzy
 msgid "Type your Status"
-msgstr "Ingresse su Estado"
+msgstr "su Estado"
 
 #: Messenger/js/Layout.js:118
 msgid "press ENTER after"
@@ -267,37 +284,51 @@ msgstr "No molestar"
 msgid "Unavailable"
 msgstr "Indisponible"
 
-#: Messenger/js/Layout.js:355
+#: Messenger/js/Layout.js:251
+#, fuzzy
+msgid "Action"
+msgid_plural "Actions"
+msgstr[0] "Acciones"
+msgstr[1] "Acciones"
+
+#: Messenger/js/Layout.js:289
+#, fuzzy
+msgid "Preference"
+msgid_plural "Preferences"
+msgstr[0] "Preferencias"
+msgstr[1] "Preferencias"
+
+#: Messenger/js/Layout.js:538
 msgid "JID"
 msgstr "JID"
 
-#: Messenger/js/Layout.js:362
-#: Messenger/js/Layout.js:421
+#: Messenger/js/Layout.js:545
+#: Messenger/js/Layout.js:604
 msgid "Name"
 msgstr "Nombre"
 
-#: Messenger/js/Layout.js:367
+#: Messenger/js/Layout.js:550
 msgid "Group"
 msgstr "Grupo"
 
-#: Messenger/js/Layout.js:373
+#: Messenger/js/Layout.js:556
 msgid "Select a group"
 msgstr "Seleccione un grupo de"
 
-#: Messenger/js/Layout.js:383
-#: Messenger/js/Layout.js:426
+#: Messenger/js/Layout.js:566
+#: Messenger/js/Layout.js:609
 msgid "Add"
 msgstr "añadir"
 
-#: Messenger/js/Layout.js:459
+#: Messenger/js/Layout.js:642
 msgid "Join Groupchat"
 msgstr "Únete al grupo de charla"
 
-#: Messenger/js/Layout.js:468
+#: Messenger/js/Layout.js:651
 msgid "Identity"
 msgstr "Identidad"
 
-#: Messenger/js/Layout.js:474
+#: Messenger/js/Layout.js:657
 msgid "Host"
 msgstr "Host"
 
@@ -308,15 +339,15 @@ msgstr "Host"
 msgid "Room"
 msgstr "Sala"
 
-#: Messenger/js/Layout.js:484
+#: Messenger/js/Layout.js:667
 msgid "Nickname"
 msgstr "Apodo"
 
-#: Messenger/js/Layout.js:490
+#: Messenger/js/Layout.js:673
 msgid "Password"
 msgstr "contraseña"
 
-#: Messenger/js/Layout.js:494
+#: Messenger/js/Layout.js:677
 msgid "Join"
 msgstr "Unirse"
 
@@ -398,6 +429,7 @@ msgstr "Eliminar contacto"
 
 #: Messenger/js/RosterTree.js:80
 #: Messenger/js/RosterTree.js:179
+#, fuzzy
 msgid "Are you sure you want to delete "
 msgstr "¿Está seguro que desea eliminar"
 
@@ -432,6 +464,7 @@ msgid "Notifications"
 msgstr "Notificaciones"
 
 #: Messenger/js/ConfigWindow.js:28
+#, fuzzy
 msgid "Show notifications"
 msgstr "Mostrar notificaciones"
 
@@ -447,6 +480,7 @@ msgid "Private Address"
 msgstr "Dirección privada"
 
 #: Messenger/js/ConfigWindow.js:69
+#, fuzzy
 msgid "Custom Name"
 msgstr "Nombre personalizado"
 
@@ -456,7 +490,7 @@ msgstr "Login"
 
 #: Messenger/js/ConfigWindow.js:88
 msgid "Save"
-msgstr "Guardar"
+msgstr "GUardar"
 
 #: Messenger/js/ConfigWindow.js:92
 msgid "Cancel"
@@ -469,8 +503,9 @@ msgstr "se ha eliminado correctamente"
 
 #: Messenger/js/RosterHandler.js:300
 #: Messenger/js/RosterHandler.js:357
+#, fuzzy
 msgid "Successful"
-msgstr "Exitoso"
+msgstr "exitosamente añadido"
 
 #: Export/Pdf.php:114
 #: js/ContactEditDialog.js:168
@@ -497,8 +532,9 @@ msgid "was not removed"
 msgstr "no fue eliminado"
 
 #: Messenger/js/Chat.js:22
+#, fuzzy
 msgid "Options"
-msgstr "Opciones"
+msgstr "Acciones"
 
 #: Messenger/js/Chat.js:39
 msgid "Start video chat"

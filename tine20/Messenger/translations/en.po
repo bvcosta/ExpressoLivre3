@@ -2,23 +2,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tine 2.0 Messenger\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-02 14:39-0300\n"
-"PO-Revision-Date: 2012-11-09 13:26-0300\n"
-"Last-Translator: Cassiano Dal Pizzol <cassiano@dalpizzol@serpro.gov.br>\n"
-"Language-Team: SERPRO Salvador <marcio.albuquerque@serpro.gov.br>\n"
-"Language: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Marcio Albuquerque <marcio.lima.albuquerque@gmail.com>\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2012-03-02 09:32+0000\n"
-"X-Generator: Launchpad (build 14886)\n"
-"X-Poedit-Country: UNITED STATES\n"
-"X-Poedit-Language: en\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-KeywordsList: _\n"
-"X-Poedit-Basepath: ../../\n"
-"X-Poedit-SearchPath-0: Messenger\n"
 
 #: Messenger/Preference.php:57
 msgid "Show Notifications"
@@ -231,9 +221,12 @@ msgstr "Group created successfully"
 
 #: Messenger/js/Window.js:21
 #: Messenger/js/Layout.js:46
-#: Messenger/js/Layout.js:413
+#: Messenger/js/Layout.js:268
+#: Messenger/js/Layout.js:596
 msgid "Add Group"
-msgstr "Add Group"
+msgid_plural "Add Group"
+msgstr[0] "Add Group"
+msgstr[1] "Add Group"
 
 #: Messenger/js/Window.js:22
 msgid "The group already exists"
@@ -251,6 +244,10 @@ msgstr "Add Buddy"
 #: Messenger/js/Window.js:62
 msgid "Buddy not added"
 msgstr "Buddy not added"
+
+#: Messenger/js/Messenger.js:27
+msgid "ME"
+msgstr "ME"
 
 #: Messenger/js/Messenger.js:74
 msgid "Messenger"
@@ -285,13 +282,19 @@ msgid "Actions"
 msgstr "Actions"
 
 #: Messenger/js/Layout.js:38
-#: Messenger/js/Layout.js:337
+#: Messenger/js/Layout.js:259
+#: Messenger/js/Layout.js:520
 msgid "Add Contact"
-msgstr "Add Contact"
+msgid_plural "Add Contact"
+msgstr[0] "Add Contact"
+msgstr[1] "Add Contact"
 
 #: Messenger/js/Layout.js:55
+#: Messenger/js/Layout.js:278
 msgid "Logout"
-msgstr "Logout"
+msgid_plural "Logout"
+msgstr[0] "Logout"
+msgstr[1] "Logout"
 
 #: Messenger/js/Layout.js:117
 msgid "Type your Status"
@@ -317,25 +320,37 @@ msgstr "Do Not Disturb"
 msgid "Unavailable"
 msgstr "Unavailable"
 
-#: Messenger/js/Layout.js:355
+#: Messenger/js/Layout.js:251
+msgid "Action"
+msgid_plural "Actions"
+msgstr[0] "Actions"
+msgstr[1] "Actions"
+
+#: Messenger/js/Layout.js:289
+msgid "Preference"
+msgid_plural "Preferences"
+msgstr[0] "Preferences"
+msgstr[1] "Preferences"
+
+#: Messenger/js/Layout.js:538
 msgid "JID"
 msgstr "JID"
 
-#: Messenger/js/Layout.js:362
-#: Messenger/js/Layout.js:421
+#: Messenger/js/Layout.js:545
+#: Messenger/js/Layout.js:604
 msgid "Name"
 msgstr "Name"
 
-#: Messenger/js/Layout.js:367
+#: Messenger/js/Layout.js:550
 msgid "Group"
 msgstr "Group"
 
-#: Messenger/js/Layout.js:373
+#: Messenger/js/Layout.js:556
 msgid "Select a group"
 msgstr "Select a group"
 
-#: Messenger/js/Layout.js:383
-#: Messenger/js/Layout.js:426
+#: Messenger/js/Layout.js:566
+#: Messenger/js/Layout.js:609
 msgid "Add"
 msgstr "Add"
 
@@ -343,7 +358,11 @@ msgstr "Add"
 msgid "These fields are checked when a new contact is created. If a record with the same data in the fields is found, a duplicate exception is thrown."
 msgstr "These fields are checked when a new contact is created. If a record with the same data in the fields is found, a duplicate exception is thrown."
 
-#: Messenger/js/Layout.js:468
+#: Messenger/js/Layout.js:642
+msgid "Join Groupchat"
+msgstr "Join Groupchat"
+
+#: Messenger/js/Layout.js:651
 msgid "Identity"
 msgstr "Identity"
 
@@ -351,19 +370,23 @@ msgstr "Identity"
 msgid "Possible contact salutations. Please note that additional values might impact other Addressbook systems on export or syncronisation."
 msgstr "Possible contact salutations. Please note that additional values might impact other Addressbook systems on export or syncronisation."
 
-#: Messenger/js/Layout.js:479
+#: Messenger/js/Layout.js:657
+msgid "Host"
+msgstr "Host"
+
+#: Messenger/js/Layout.js:662
 msgid "Room"
 msgstr "Room"
 
-#: Messenger/js/Layout.js:484
+#: Messenger/js/Layout.js:667
 msgid "Nickname"
 msgstr "Nickname"
 
-#: Messenger/js/Layout.js:490
+#: Messenger/js/Layout.js:673
 msgid "Password"
 msgstr "Password"
 
-#: Messenger/js/Layout.js:494
+#: Messenger/js/Layout.js:677
 msgid "Join"
 msgstr "Join"
 
@@ -480,7 +503,7 @@ msgstr "Notifications"
 
 #: Messenger/js/ConfigWindow.js:28
 msgid "Show notifications"
-msgstr "Show notifications"
+msgstr "Show Notifications"
 
 #: Messenger/js/ConfigWindow.js:39
 msgid "History"
@@ -539,36 +562,12 @@ msgstr "Options"
 msgid "Start video chat"
 msgstr "Start video chat"
 
-#~ msgid "manage shared addressbooks"
-#~ msgstr "manage shared addressbooks"
-
-#~ msgid "Create new shared addressbook folders"
-#~ msgstr "Create new shared addressbook folders"
-
-#~ msgid "manage shared addressbook favorites"
-#~ msgstr "manage shared addressbook favorites"
-
-#~ msgid "Create or update shared addressbook favorites"
-#~ msgstr "Create or update shared addressbook favorites"
-
-#~ msgid "Contact duplicate check fields"
-#~ msgstr "Contact duplicate check fields"
-
 #: Export/Pdf.php:76
 #: js/ContactEditDialog.js:180
 #: js/ContactGrid.js:116
 #: js/Model.js:33
 msgid "Room"
 msgstr "Room"
-
-#~ msgid "Contact salutations available"
-#~ msgstr "Contact salutations available"
-
-#~ msgid "Possible contact salutations. Please note that additional values might impact other Addressbook systems on export or syncronisation."
-#~ msgstr "Possible contact salutations. Please note that additional values might impact other Addressbook systems on export or syncronisation."
-
-#~ msgid "Parsing rules for addresses"
-#~ msgstr "Parsing rules for addresses"
 
 #: Export/Pdf.php:88
 #: js/ContactEditDialog.js:297
@@ -580,24 +579,6 @@ msgstr "Room"
 #: js/Model.js:159
 msgid "Private Address"
 msgstr "Private Address"
-
-#~ msgid "%s's personal addressbook"
-#~ msgstr "%s's personal addressbook"
-
-#~ msgid "Business Contact Data"
-#~ msgstr "Business Contact Data"
-
-#~ msgid "Organisation / Unit"
-#~ msgstr "Organisation / Unit"
-
-#~ msgid "Business Address"
-#~ msgstr "Business Address"
-
-#~ msgid "Email"
-#~ msgstr "Email"
-
-#~ msgid "Telephone Work"
-#~ msgstr "Telephone Work"
 
 #: Export/Pdf.php:114
 #: js/ContactEditDialog.js:168
@@ -614,27 +595,6 @@ msgstr "Birthday"
 #: js/Model.js:144
 msgid "Job Title"
 msgstr "Job Title"
-
-#~ msgid "Telephone Fax"
-#~ msgstr "Telephone Fax"
-
-#~ msgid "Telephone Page"
-#~ msgstr "Telephone Page"
-
-#~ msgid "URL"
-#~ msgstr "URL"
-
-#~ msgid "Assistant"
-#~ msgstr "Assistant"
-
-#~ msgid "Assistant Telephone"
-#~ msgstr "Assistant Telephone"
-
-#~ msgid "Private Contact Data"
-#~ msgstr "Private Contact Data"
-
-#~ msgid "Private Address"
-#~ msgstr "Private Address"
 
 #: Import/definitions/adb_tine_import_csv.xml:20
 msgid "Contacts imported on ###CURRENTDATE### at ###CURRENTTIME### by ###USERFULLNAME###"
@@ -977,6 +937,168 @@ msgid_plural "Export {0}"
 msgstr[0] "Export {0}"
 msgstr[1] "Export {0}"
 
+#: js/ContactGridDetailsPanel.js:62
+#: js/Model.js:94
+msgid "Contacts"
+msgstr "Contacts"
+
+#: js/Model.js:98
+#: js/Model.js:205
+msgid "Addressbooks"
+msgstr "Addressbooks"
+
+#: Preference.php:28
+msgid "All contacts"
+msgstr "All contacts"
+
+#: Preference.php:65
+msgid "Default Addressbook"
+msgstr "Default Addressbook"
+
+#: Preference.php:66
+msgid "The default addressbook for new contacts"
+msgstr "The default addressbook for new contacts"
+
+#: Preference.php:69
+msgid "Default Favorite"
+msgstr "Default Favorite"
+
+#: Preference.php:70
+msgid "The default favorite which is loaded on addressbook startup"
+msgstr "The default favorite which is loaded on addressbook startup"
+
+#: Setup/Initialize.php:63
+#: Setup/Update/Release5.php:189
+msgid "Mr"
+msgstr "Mr"
+
+#: Setup/Initialize.php:64
+#: Setup/Update/Release5.php:190
+msgid "Ms"
+msgstr "Ms"
+
+#: Setup/Initialize.php:134
+#: Setup/Update/Release3.php:37
+msgid "All contacts I have read grants for"
+msgstr "All contacts I have read grants for"
+
+#: Setup/Initialize.php:139
+msgid "My company"
+msgstr "My company"
+
+#: Setup/Initialize.php:140
+msgid "All coworkers in my company"
+msgstr "All coworkers in my company"
+
+#: Setup/Initialize.php:153
+msgid "My contacts"
+msgstr "My contacts"
+
+#: Setup/Initialize.php:154
+msgid "All contacts in my Addressbooks"
+msgstr "All contacts in my Addressbooks"
+
+#: Setup/Initialize.php:166
+msgid "Last modified by me"
+msgstr "Last modified by me"
+
+#: Setup/Initialize.php:167
+msgid "All contacts that I have last modified"
+msgstr "All contacts that I have last modified"
+
+#: Setup/setup.xml:648
+msgid "Internal Contacts"
+msgstr "Internal Contacts"
+
+#~ msgid "manage shared addressbooks"
+#~ msgstr "manage shared addressbooks"
+
+#~ msgid "Create new shared addressbook folders"
+#~ msgstr "Create new shared addressbook folders"
+
+#~ msgid "manage shared addressbook favorites"
+#~ msgstr "manage shared addressbook favorites"
+
+#~ msgid "Create or update shared addressbook favorites"
+#~ msgstr "Create or update shared addressbook favorites"
+
+#~ msgid "Contact duplicate check fields"
+#~ msgstr "Contact duplicate check fields"
+
+#~ msgid ""
+#~ "These fields are checked when a new contact is created. If a record with "
+#~ "the same data in the fields is found, a duplicate exception is thrown."
+#~ msgstr ""
+#~ "These fields are checked when a new contact is created. If a record with "
+#~ "the same data in the fields is found, a duplicate exception is thrown."
+
+#~ msgid "Contact salutations available"
+#~ msgstr "Contact salutations available"
+
+#~ msgid "Possible contact salutations. Please note that additional values might impact other Addressbook systems on export or syncronisation."
+#~ msgstr "Possible contact salutations. Please note that additional values might impact other Addressbook systems on export or syncronisation."
+
+#~ msgid ""
+#~ "Possible contact salutations. Please note that additional values might "
+#~ "impact other Addressbook systems on export or syncronisation."
+#~ msgstr ""
+#~ "Possible contact salutations. Please note that additional values might "
+#~ "impact other Addressbook systems on export or syncronisation."
+
+#~ msgid "Parsing rules for addresses"
+#~ msgstr "Parsing rules for addresses"
+
+#~ msgid "Path to a XML file with address parsing rules."
+#~ msgstr "Path to a XML file with address parsing rules."
+
+#~ msgid "%s's personal addressbook"
+#~ msgstr "%s's personal addressbook"
+
+#~ msgid "Business Contact Data"
+#~ msgstr "Business Contact Data"
+
+#~ msgid "Organisation / Unit"
+#~ msgstr "Organisation / Unit"
+
+#~ msgid "Business Address"
+#~ msgstr "Business Address"
+
+#~ msgid "Email"
+#~ msgstr "Email"
+
+#~ msgid "Telephone Work"
+#~ msgstr "Telephone Work"
+
+#~ msgid "Telephone Cellphone"
+#~ msgstr "Telephone Cellphone"
+
+#~ msgid "Telephone Car"
+#~ msgstr "Telephone Car"
+
+#~ msgid "Telephone Fax"
+#~ msgstr "Telephone Fax"
+
+#~ msgid "Telephone Page"
+#~ msgstr "Telephone Page"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Assistant"
+#~ msgstr "Assistant"
+
+#~ msgid "Assistant Telephone"
+#~ msgstr "Assistant Telephone"
+
+#~ msgid "Private Contact Data"
+#~ msgstr "Private Contact Data"
+
+#~ msgid "Private Address"
+#~ msgstr "Private Address"
+
+#~ msgid "Email Home"
+#~ msgstr "Email Home"
+
 #~ msgid "Telephone Home"
 #~ msgstr "Telephone Home"
 
@@ -998,10 +1120,8 @@ msgstr[1] "Export {0}"
 #~ msgid "Job Title"
 #~ msgstr "Job Title"
 
-#: js/ContactGridDetailsPanel.js:62
-#: js/Model.js:94
-msgid "Contacts"
-msgstr "Contacts"
+#~ msgid "Contact import from Google address book"
+#~ msgstr "Contact import from Google address book"
 
 #~ msgid "Contact VCARD import"
 #~ msgstr "Contact VCARD import"
@@ -1331,11 +1451,6 @@ msgstr "Contacts"
 #~ msgid "The default favorite which is loaded on addressbook startup"
 #~ msgstr "The default favorite which is loaded on addressbook startup"
 
-#: js/Model.js:98
-#: js/Model.js:205
-msgid "Addressbooks"
-msgstr "Addressbooks"
-
 #~ msgid "Ms"
 #~ msgstr "Ms"
 
@@ -1359,66 +1474,3 @@ msgstr "Addressbooks"
 
 #~ msgid "All contacts that I have last modified"
 #~ msgstr "All contacts that I have last modified"
-
-#: Preference.php:28
-msgid "All contacts"
-msgstr "All contacts"
-
-#: Preference.php:65
-msgid "Default Addressbook"
-msgstr "Default Addressbook"
-
-#: Preference.php:66
-msgid "The default addressbook for new contacts"
-msgstr "The default addressbook for new contacts"
-
-#: Preference.php:69
-msgid "Default Favorite"
-msgstr "Default Favorite"
-
-#: Preference.php:70
-msgid "The default favorite which is loaded on addressbook startup"
-msgstr "The default favorite which is loaded on addressbook startup"
-
-#: Setup/Initialize.php:63
-#: Setup/Update/Release5.php:189
-msgid "Mr"
-msgstr "Mr"
-
-#: Setup/Initialize.php:64
-#: Setup/Update/Release5.php:190
-msgid "Ms"
-msgstr "Ms"
-
-#: Setup/Initialize.php:134
-#: Setup/Update/Release3.php:37
-msgid "All contacts I have read grants for"
-msgstr "All contacts I have read grants for"
-
-#: Setup/Initialize.php:139
-msgid "My company"
-msgstr "My company"
-
-#: Setup/Initialize.php:140
-msgid "All coworkers in my company"
-msgstr "All coworkers in my company"
-
-#: Setup/Initialize.php:153
-msgid "My contacts"
-msgstr "My contacts"
-
-#: Setup/Initialize.php:154
-msgid "All contacts in my Addressbooks"
-msgstr "All contacts in my Addressbooks"
-
-#: Setup/Initialize.php:166
-msgid "Last modified by me"
-msgstr "Last modified by me"
-
-#: Setup/Initialize.php:167
-msgid "All contacts that I have last modified"
-msgstr "All contacts that I have last modified"
-
-#: Setup/setup.xml:648
-msgid "Internal Contacts"
-msgstr "Internal Contacts"
