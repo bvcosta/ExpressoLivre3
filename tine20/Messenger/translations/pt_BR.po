@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tine 2.0 Messenger\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-19 15:04-0300\n"
-"PO-Revision-Date: 2012-11-19 15:04-0300\n"
+"POT-Creation-Date: 2012-11-20 10:20-0300\n"
+"PO-Revision-Date: 2012-11-20 10:20-0300\n"
 "Last-Translator: Marcio Albuquerque <marcio.lima.albuquerque@gmail.com>\n"
 "Language-Team: SERPRO Salvador <marcio.albuquerque@serpro.gov.br>\n"
 "Language: \n"
@@ -229,9 +229,13 @@ msgstr "Grupo criado com sucesso"
 
 #: Messenger/js/Window.js:21
 #: Messenger/js/Layout.js:46
-#: Messenger/js/Layout.js:413
+#: Messenger/js/Layout.js:268
+#: Messenger/js/Layout.js:596
+#, fuzzy
 msgid "Add Group"
-msgstr "Adicionar Grupo"
+msgid_plural "Add Group"
+msgstr[0] "Adicionar Grupo"
+msgstr[1] "Adicionar Grupo"
 
 #: Messenger/js/Window.js:22
 msgid "The group already exists"
@@ -249,6 +253,10 @@ msgstr "Adicionar Contato"
 #: Messenger/js/Window.js:62
 msgid "Buddy not added"
 msgstr "Contato não adicionado"
+
+#: Messenger/js/Messenger.js:27
+msgid "ME"
+msgstr "EU"
 
 #: Messenger/js/Messenger.js:74
 msgid "Messenger"
@@ -283,13 +291,21 @@ msgid "Actions"
 msgstr "Ações"
 
 #: Messenger/js/Layout.js:38
-#: Messenger/js/Layout.js:337
+#: Messenger/js/Layout.js:259
+#: Messenger/js/Layout.js:520
+#, fuzzy
 msgid "Add Contact"
-msgstr "Adicionar Contato"
+msgid_plural "Add Contact"
+msgstr[0] "Adicionar Contato"
+msgstr[1] "Adicionar Contato"
 
 #: Messenger/js/Layout.js:55
+#: Messenger/js/Layout.js:278
+#, fuzzy
 msgid "Logout"
-msgstr "Sair"
+msgid_plural "Logout"
+msgstr[0] "Sair"
+msgstr[1] "Sair"
 
 #: Messenger/js/Layout.js:117
 msgid "Type your Status"
@@ -315,53 +331,67 @@ msgstr "Não Perturbe"
 msgid "Unavailable"
 msgstr "Indisponível"
 
-#: Messenger/js/Layout.js:355
+#: Messenger/js/Layout.js:251
+#, fuzzy
+msgid "Action"
+msgid_plural "Actions"
+msgstr[0] "Ações"
+msgstr[1] "Ações"
+
+#: Messenger/js/Layout.js:289
+#, fuzzy
+msgid "Preference"
+msgid_plural "Preferences"
+msgstr[0] "Preferências"
+msgstr[1] "Preferências"
+
+#: Messenger/js/Layout.js:538
 msgid "JID"
 msgstr "JID"
 
-#: Messenger/js/Layout.js:362
-#: Messenger/js/Layout.js:421
+#: Messenger/js/Layout.js:545
+#: Messenger/js/Layout.js:604
 msgid "Name"
 msgstr "Nome"
 
-#: Messenger/js/Layout.js:367
+#: Messenger/js/Layout.js:550
 msgid "Group"
 msgstr "Grupo"
 
-#: Messenger/js/Layout.js:373
+#: Messenger/js/Layout.js:556
 msgid "Select a group"
 msgstr "Selecione um grupo"
 
-#: Messenger/js/Layout.js:383
-#: Messenger/js/Layout.js:426
+#: Messenger/js/Layout.js:566
+#: Messenger/js/Layout.js:609
 msgid "Add"
 msgstr "Incluir"
 
-#: Messenger/js/Layout.js:459
+#: Messenger/js/Layout.js:642
 msgid "Join Groupchat"
 msgstr "Entrar em Sala de Bate-papo"
 
-#: Messenger/js/Layout.js:468
+#: Messenger/js/Layout.js:651
 msgid "Identity"
 msgstr "Identidade"
 
-#: Messenger/js/Layout.js:474
+#: Messenger/js/Layout.js:657
 msgid "Host"
 msgstr "Anfitrião"
 
-#: Messenger/js/Layout.js:479
+#: Messenger/js/Layout.js:662
 msgid "Room"
 msgstr "Sala"
 
-#: Messenger/js/Layout.js:484
+#: Messenger/js/Layout.js:667
 msgid "Nickname"
 msgstr "Apelido"
 
-#: Messenger/js/Layout.js:490
+#: Messenger/js/Layout.js:673
 msgid "Password"
 msgstr "Senha"
 
-#: Messenger/js/Layout.js:494
+#: Messenger/js/Layout.js:677
 msgid "Join"
 msgstr "Entrar"
 
@@ -477,14 +507,17 @@ msgid "Notifications"
 msgstr "Notificações"
 
 #: Messenger/js/ConfigWindow.js:28
+#, fuzzy
 msgid "Show notifications"
 msgstr "Exibir notificações"
 
 #: Messenger/js/ConfigWindow.js:39
+#, fuzzy
 msgid "History"
-msgstr "Histórico"
+msgstr "Histórico do Chat"
 
 #: Messenger/js/ConfigWindow.js:69
+#, fuzzy
 msgid "Custom Name"
 msgstr "Nome Personalizado"
 
@@ -503,22 +536,24 @@ msgstr "Cancelar"
 #: Messenger/js/RosterHandler.js:50
 #: Messenger/js/RosterHandler.js:359
 msgid "was successfully removed"
-msgstr "foi excluído com sucesso"
+msgstr "foi removido com sucesso"
 
 #: Messenger/js/RosterHandler.js:300
 #: Messenger/js/RosterHandler.js:357
+#, fuzzy
 msgid "Successful"
-msgstr "Com sucesso"
+msgstr "Adicionado com sucesso"
 
 #: Messenger/js/RosterHandler.js:301
 #: Messenger/js/RosterHandler.js:358
 #: Messenger/js/RosterHandler.js:363
+#, fuzzy
 msgid "The group"
-msgstr "O grupo"
+msgstr "Selecione um grupo"
 
 #: Messenger/js/RosterHandler.js:302
 msgid "was successfully renamed to"
-msgstr " foi renomeado com sucesso "
+msgstr "foi renomeado com sucesso"
 
 #: Messenger/js/RosterHandler.js:307
 msgid " already exist. It was not renamed."
@@ -526,55 +561,14 @@ msgstr " já existe. Não foi renomeado."
 
 #: Messenger/js/RosterHandler.js:364
 msgid "was not removed"
-msgstr " não foi excluído"
+msgstr "não foi removido"
 
 #: Messenger/js/Chat.js:22
+#, fuzzy
 msgid "Options"
-msgstr "Opções"
+msgstr "Ações"
 
 #: Messenger/js/Chat.js:39
 msgid "Start video chat"
 msgstr "Iniciar video chat"
-
-#~ msgid "Account"
-
-#~ msgid_plural "Accounts"
-#~ msgstr[0] "Conta"
-#~ msgstr[1] "Contas"
-
-#~ msgid "Email Accounts"
-
-#~ msgid_plural "Email Accounts"
-#~ msgstr[0] "Conta de E-mail"
-#~ msgstr[1] "Contas de E-mail"
-
-#~ msgid "Action"
-
-#~ msgid "Email Accounts"
-
-#~ msgid_plural "Email Accounts"
-#~ msgstr[0] "Conta de E-mail"
-#~ msgstr[1] "Contas de E-mail"
-
-#~ msgid "Action"
-#~ msgid_plural "Actions"
-#~ msgstr[0] "Ações"
-#~ msgstr[1] "Ações"
-#~ msgid "Preference"
-#~ msgid_plural "Preferences"
-#~ msgstr[0] "Preferências"
-#~ msgstr[1] "Preferências"
-#~ msgid ""
-#~ "You're logged in Messenger. If you leave the page, Messenger will "
-#~ "disconnect!"
-#~ msgstr ""
-#~ "Você está conectado no Messenger. Se sair da página, o Messenger será "
-#~ "desconectado!"
-#~ msgid " was successfully removed!"
-#~ msgstr " foi excluído com sucesso!"
-
-#~ msgid "Configuration"
-#~ msgstr "Configurações"
-#~ msgid "Available"
-#~ msgstr "Disponível"
 
