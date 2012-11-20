@@ -186,6 +186,18 @@ Ext.namespace('Tine.Felamimail');
             tooltip: this.app.i18n._('Activate this toggle button to receive a reading confirmation.')
         });
 
+        this.action_toggleSendAsPlain = new Ext.Action({
+            text: this.app.i18n._('Send As Plain'),
+            handler: this.onToggleSendAsPlain,
+            iconCls: 'notes_noteIcon',
+            disabled: false,
+            scope: this,
+            enableToggle: true
+        });
+        this.button_toggleSendAsPlain = Ext.apply(new Ext.Button(this.action_toggleSendAsPlain), {
+            tooltip: this.app.i18n._('Activate this toggle button to send the message as text/plain')
+        });
+
         this.action_toggleMarkAsImportant = new Ext.Action({
             text: this.app.i18n._('Mark as Important'),
             handler: this.onToggleMarkAsImportant,
@@ -231,6 +243,7 @@ Ext.namespace('Tine.Felamimail');
                     this.button_saveEmailNote,
                     this.action_saveAsTemplate,
                     this.button_toggleReadingConfirmation,
+                    this.button_toggleSendAsPlain,
                     this.button_toggleMarkAsImportant,
                     this.button_toggleSendAsPlain,
                 ]
@@ -682,6 +695,16 @@ Ext.namespace('Tine.Felamimail');
      */
     onToggleReadingConfirmation: function () {
         this.record.set('reading_conf', (! this.record.get('reading_conf')));
+    },
+
+    /**
+     * toggle Request Send As Plain
+     */
+    onToggleSendAsPlain: function () {
+        var sending_plain = (! this.record.get('sending_plain'));
+        this.record.set('sending_plain', sending_plain);
+        this.htmlEditor.disableItems(sending_plain);
+        this.htmlEditor.readOnly = sending_plain;
     },
 
     /**
