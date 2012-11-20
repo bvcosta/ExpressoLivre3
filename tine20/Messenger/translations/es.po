@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tine 2.0 Messenger\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-20 18:31-0300\n"
-"PO-Revision-Date: 2012-11-20 18:31-0300\n"
+"POT-Creation-Date: 2012-11-20 18:42-0300\n"
+"PO-Revision-Date: 2012-11-20 18:42-0300\n"
 "Last-Translator: Marcio Albuquerque <marcio.lima.albuquerque@gmail.com>\n"
 "Language-Team: SERPRO Expresso <marcio.albuquerque@serpro.gov.br>\n"
 "Language: \n"
@@ -83,14 +83,12 @@ msgstr "Cargo"
 
 #: Messenger/js/LogHandler.js:78
 #: Messenger/js/ChatHandler.js:126
-#, fuzzy
 msgid "is unavailable"
 msgstr "Indisponible"
 
 #: Messenger/js/LogHandler.js:84
-#, fuzzy
 msgid "Status text"
-msgstr "Estado"
+msgstr "Texto del estado"
 
 #: Messenger/js/LogHandler.js:86
 msgid "is away"
@@ -506,17 +504,14 @@ msgid "Notifications"
 msgstr "Notificaciones"
 
 #: Messenger/js/ConfigWindow.js:28
-#, fuzzy
 msgid "Show notifications"
 msgstr "Mostrar notificaciones"
 
 #: Messenger/js/ConfigWindow.js:39
-#, fuzzy
 msgid "History"
 msgstr "Historial de Chat"
 
 #: Messenger/js/ConfigWindow.js:69
-#, fuzzy
 msgid "Custom Name"
 msgstr "Nombre personalizado"
 
@@ -561,10 +556,10 @@ msgid "was not removed"
 msgstr "no fue eliminado"
 
 #: Messenger/js/Chat.js:22
-#, fuzzy
 msgid "Options"
 msgstr "Acciones"
 
 #: Messenger/js/Chat.js:39
 msgid "Start video chat"
 msgstr "Iniciar chat de vídeo"
+
