@@ -68,7 +68,8 @@ class Tinebase_Model_TagFilter extends Tinebase_Record_Abstract
             ->where($db->quoteIdentifier('is_deleted') . ' = 0')
             //->order('type', 'DESC')
             ->order('name', 'ASC');
-        
+
+        $appZero =$db->quoteInto('?', "0");
         if (!empty($this->application)) {
             $applicationId = Tinebase_Application::getInstance()->getApplicationByName($this->application)->getId();
             
