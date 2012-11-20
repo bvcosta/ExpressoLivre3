@@ -103,7 +103,8 @@ class Tinebase_Frontend_Json_Container
      */
     public function deleteContainer($containerId)
     {
-        Tinebase_Container::getInstance()->deleteContainer($containerId);
+        $c = Tinebase_Container::getInstance();
+        $c->deleteContainer($containerId);
         
         return array(
             'success'      => TRUE
@@ -138,7 +139,8 @@ class Tinebase_Frontend_Json_Container
     public function setContainerColor($containerId, $color)
     {
         try {
-            $container = Tinebase_Container::getInstance()->setContainerColor($containerId, $color);
+            $container = Tinebase_Container::getInstance();
+            $container->setContainerColor($containerId, $color);
         } catch (Tinebase_Exception $e) {
             throw new Tinebase_Exception('Container not found or permission to set containername denied!');
         }
