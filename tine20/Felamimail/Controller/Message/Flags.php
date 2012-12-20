@@ -25,7 +25,8 @@ class Felamimail_Controller_Message_Flags extends Felamimail_Controller_Message_
                                             '\Seen'     => Zend_Mail_Storage::FLAG_SEEN,        // _("Seen")
                                             '\Deleted'  => Zend_Mail_Storage::FLAG_DELETED,     // _("Deleted")
                                             '\Draft'    => Zend_Mail_Storage::FLAG_DRAFT,       // _("Draft")
-                                            '\Flagged'  => Zend_Mail_Storage::FLAG_FLAGGED);    // _("Flagged")
+                                            '\Flagged'  => Zend_Mail_Storage::FLAG_FLAGGED,    // _("Flagged")
+                                            'Passed'  => Zend_Mail_Storage::FLAG_PASSED);    // _("Passed")
     
     /**
      * holds the instance of the singleton

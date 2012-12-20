@@ -652,10 +652,10 @@ Tine.Felamimail.GridPanel = Ext.extend(Tine.widgets.grid.GridPanel, {
         var icons = [],
             result = '';
             
-        if (record.hasFlag('\\Answered')) {
+        if (record.hasFlag('\\Answered') && !record.hasFlag('\\Draft')) {
             icons.push({src: 'images/oxygen/16x16/actions/mail-reply-sender.png', qtip: _('Answered')});
         }   
-        if (record.hasFlag('Passed')) {
+        if (record.hasFlag('Passed') || (record.hasFlag('\\Answered') && record.hasFlag('\\Draft'))) {
             icons.push({src: 'images/oxygen/16x16/actions/mail-forward.png', qtip: _('Forwarded')});
         }   
 //        if (record.hasFlag('\\Recent')) {
