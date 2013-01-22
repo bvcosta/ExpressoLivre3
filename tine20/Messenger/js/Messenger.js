@@ -170,7 +170,7 @@ Tine.Messenger.Application = Ext.extend(Tine.Tinebase.Application, {
             this.startMessengerDelayedTask.delay(1000);
         }
         
-        this.isBlurred = false;
+        //this.isBlurred = false;
         this.blinking = false;
         this.windowOriginalTitle = null;
         this.blinkTitle = "IM Message"; // _('IM Message')
@@ -258,15 +258,15 @@ Tine.Messenger.Application = Ext.extend(Tine.Tinebase.Application, {
             20
         );
             
-        window.onblur = function () {
-            Tine.Tinebase.appMgr.get('Messenger').isBlurred = true;
-        };
-        
+//        window.onblur = function () {
+//            console.log('====== BLUR =======');
+//            Tine.Tinebase.appMgr.get('Messenger').isBlurred = true;
+//        };
+//        
         window.onfocus = function () {
-            if (Tine.Tinebase.appMgr.get('Messenger').isBlurred && Tine.Tinebase.appMgr.get('Messenger').blinking) {
+            if (Tine.Tinebase.appMgr.get('Messenger').blinking) {
                 document.title = Tine.Tinebase.appMgr.get('Messenger').windowOriginalTitle;
                 window.clearInterval(Tine.Tinebase.appMgr.get('Messenger').blinkTimer);
-                Tine.Tinebase.appMgr.get('Messenger').isBlurred = false;
                 Tine.Tinebase.appMgr.get('Messenger').blinking = false;
             }
         };
@@ -567,7 +567,7 @@ Tine.Messenger.Util = {
         var atpos = jid.indexOf('@'),
             name = jid.substr(0, atpos),
             server = jid.substr(atpos);
-        console.log(name.replace(/\./g, "_") + server.replace(/@/g, "__").replace(/\./g, "-").replace(/\//g, "_"));
+
         return name.replace(/\./g, "_") +
                server.replace(/@/g, "__").replace(/\./g, "-").replace(/\//g, "_");
     },
@@ -579,7 +579,7 @@ Tine.Messenger.Util = {
         var seppos = clean.indexOf('__'),
             name = clean.substr(0, seppos),
             server = clean.substr(seppos);
-        console.log(name.replace(/_/g, ".") + server.replace(/__/g, "@").replace(/\-/g, ".").replace(/_/g, "/"));
+
         return name.replace(/_/g, ".") +
                server.replace(/__/g, "@").replace(/\-/g, ".").replace(/_/g, "/");
     },
@@ -680,7 +680,7 @@ Tine.Messenger.Util = {
             var t = stamp.match(/(\d{2})\:(\d{2})\:(\d{2})/);
             return t[1] - TZ + ":" + t[2] + ":" + t[3];
         }
-        return Date().match(/\d{2}\:\d{2}\:\d{2}/)[0];
+        return (new Date()).toTimeString().match(/\d{2}\:\d{2}\:\d{2}/)[0];
     },
     
     insertAtCursor: function (myField, myValue) {

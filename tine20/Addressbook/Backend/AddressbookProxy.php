@@ -75,7 +75,7 @@ class Addressbook_Backend_AddressbookProxy
         if (!(is_null($container)))
         {
             $backendType = $container->backend;
-            $arrOptions = Tinebase_Model_container::decodeBackendOptions($container->backend_options);
+            $arrOptions = strtolower($backendType) === Addressbook_Backend_Factory::LDAP ? Tinebase_Model_Container::decodeBackendOptions($container->backend_options) : array();
             $arrOptions['container'] = $container->id;
             $_SESSION[$this->_lastUserBackend] = array(
                 'backendtype' => $backendType,
@@ -86,7 +86,7 @@ class Addressbook_Backend_AddressbookProxy
         }
         else
         {
-            $bk = $_SESSION[$this->_lastUserBackend];            
+            $bk = $_SESSION[$this->_lastUserBackend];
             if (!(is_null($bk)))
             {
                 switch ($_name)
@@ -105,7 +105,7 @@ class Addressbook_Backend_AddressbookProxy
         }
         
         Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' Calling ' . $_name . ' from the 
-                                                                                                       ' .$backendType);
+                                                                                                       ' .$backendType .' com argumentos '.print_r($_arguments,true));
         return call_user_func_array(array(Addressbook_Backend_Factory::factory($backendType, $arrOptions), $_name), 
                                                                                                            $_arguments);
     }

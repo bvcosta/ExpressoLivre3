@@ -282,13 +282,20 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
                     case 'query' :
                         if (!empty($value))
                         {
-                            $return[] = "OR SUBJECT $value FROM $value";
+                            // make it compatible with ExpressoMail
+                            $return[] = "OR OR OR SUBJECT $value FROM $value CC $value BODY $value";
                         }
                         break;
                     case 'subject' :
                         if (!empty($value))
                         {
                             $return[] = "SUBJECT $value";
+                        }
+                        break;
+                    case 'body' :
+                        if (!empty($value))
+                        {
+                            $return[] = "BODY $value";
                         }
                         break;
                     case 'from_name' : // we can't diferentiate with imap filters
@@ -594,6 +601,10 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
             $isRecordSet = true;
             $_messages = $_messages->toArray();
         }
+        else
+        {
+            $_messages = (Array) $_messages;
+        }
         
         $limit = empty($_pagination->limit) ? count($_messages) : $_pagination->limit;
         $chunked = array_chunk($_messages, $limit, true);
@@ -640,10 +651,13 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
         $pagination = !$_pagination ? new Tinebase_Model_Pagination(NULL, TRUE) : $_pagination;       
         
         // TODO: do pagination on $ids and return after getMultiple
-        if($imapFilters['filters'] == 'Id'){
+         if($imapFilters['filters'] == 'Id'){
             $ids = $filterObjects[0]->getValue();
-            $ids = $this->_doPagination($ids, $_pagination);
-            return empty($ids) ? $this->_rawDataToRecordSet(array()) : $this->getMultiple($ids);
+            $ids = $this->_doPagination($ids, $pagination);
+            if($_cols === TRUE)
+                return empty($ids) ? array() : $ids;
+            else
+                return empty($ids) ? $this->_rawDataToRecordSet(array()) : $this->getMultiple($ids);
         }else{
             
             $ids = $this->_getIds($imapFilters, $_pagination);

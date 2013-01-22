@@ -376,9 +376,8 @@ Tine.Felamimail.Application = Ext.extend(Tine.Tinebase.Application, {
                 return true;
             }
             // update inboxes more often than other folders
-            if (folder.isInbox() && timestamp.getElapsed() > this.updateInterval) {
-                return true;
-            } else if (timestamp.getElapsed() > (this.updateInterval * 5)) {
+            //if (folder.isInbox() && timestamp.getElapsed() > this.updateInterval) {
+            if (timestamp.getElapsed() > this.updateInterval) {
                 return true;
             }
             return false;
@@ -787,6 +786,10 @@ Tine.Felamimail.getEmailStringFromContact = function(contact) {
         result += contact.get('email_home');
     }
     result += '>';
+    
+    if (contact.get('org_unit') != '' && contact.get('org_unit') != null ) {
+        result += '  ' + contact.get('org_unit');
+    }
     
     return result;
 };

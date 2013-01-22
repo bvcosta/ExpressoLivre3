@@ -132,7 +132,24 @@ Tine.Messenger.ChatHandler = {
             
             new_chat = true;
         }
+        
+        // Get the active and focused chat window
+        var focusedChat = null,
+            htmlChatTextFields = Ext.query('.messenger-chat-field');
+        for (var i = 0; i < htmlChatTextFields.length; i++) {
+            var chatTextField = Ext.getCmp(htmlChatTextFields[i].id);
+            if (chatTextField.hasFocus) {
+                focusedChat = chatTextField.ownerCt;
+                break;
+            }
+        }
+        
+        // Show chat that received message
         chat.show();
+        
+        // Reestablishes focus on the other window, if any
+        if (focusedChat)
+            focusedChat.show();
 
         Tine.Messenger.ChatHandler.adjustChatAreaHeight(chat_id);
         
@@ -221,7 +238,7 @@ Tine.Messenger.ChatHandler = {
         });
         chat_area.doLayout();
         
-        chat_area.body.scroll('down', 500); 
+        chat_area.body.scroll('down', 500);
     },
     
     onIncomingMessage: function (message) {
@@ -242,11 +259,7 @@ Tine.Messenger.ChatHandler = {
         }
 
         // Typing events
-        if (paused.length > 0) {
-            Tine.Messenger.ChatHandler.setChatState(jid, name + app.i18n._(' stopped typing!'));
-        } else if (composing.length > 0) {
-            Tine.Messenger.ChatHandler.setChatState(jid, name + app.i18n._(' is typing...'));
-        } else if (body.length > 0){
+        if (body.length > 0){
             // Shows the specific chat window
             Tine.Messenger.ChatHandler.showChatWindow(jid, name, type);
             // Set received chat message
@@ -254,7 +267,17 @@ Tine.Messenger.ChatHandler = {
             Tine.Messenger.ChatHandler.setChatState(jid);
             // If in another tab, it will blink!
             Tine.Messenger.ChatHandler.blinkTitle();
+        } else if ($(message).find('thread') || $(message).find('x')) { // Expresso V2 special case
+            $(message).children('thread').remove();
+            $(message).children('x').remove();
+            body = $(message).text();
+        } else if (composing.length > 0) {
+            Tine.Messenger.ChatHandler.setChatState(jid, name + app.i18n._(' is typing...'));
+        } else if (paused.length > 0) {
+            Tine.Messenger.ChatHandler.setChatState(jid, name + app.i18n._(' stopped typing!'));
         }
+        
+        Tine.Messenger.ChatHandler.saveHistory(message);
         
         return true;
     },
@@ -326,12 +349,15 @@ Tine.Messenger.ChatHandler = {
     
     sendMessage: function (msg, id) {
         var myNick = Tine.Messenger.Credential.myNick();
-        Tine.Messenger.Application.connection.send($msg({
+        var message = $msg({
             "to": Tine.Messenger.Util.idToJid(id),
-            "type": 'chat'})
-          .c("body").t(msg).up()
-          .c("active", {xmlns: "http://jabber.org/protocol/chatstates"}));
+            "type": 'chat'
+        }).c("body").t(msg).up()
+          .c("active", {xmlns: "http://jabber.org/protocol/chatstates"});
+        Tine.Messenger.Application.connection.send(message);
         Tine.Messenger.ChatHandler.setChatMessage(id, msg, myNick);
+        
+        Tine.Messenger.ChatHandler.saveHistory(message.nodeTree);
         
         return true;
     },
@@ -413,18 +439,64 @@ Tine.Messenger.ChatHandler = {
     },
     
     blinkTitle: function () {
-        Tine.Tinebase.appMgr.get('Messenger').windowOriginalTitle = document.title;
-
-        if (Tine.Tinebase.appMgr.get('Messenger').isBlurred &&
-            !Tine.Tinebase.appMgr.get('Messenger').blinking) {
+        Tine.Tinebase.appMgr.get('Messenger').windowOriginalTitle = Tine.title + ' - ' + Tine.Tinebase.appMgr.activeApp.getTitle();
+        
+        if (!document.hasFocus() && !Tine.Tinebase.appMgr.get('Messenger').blinking) {
+            var i18n = Tine.Tinebase.appMgr.get('Messenger').i18n,
+                title = Tine.Tinebase.appMgr.get('Messenger').windowOriginalTitle,
+                blink = "=== " + i18n._(Tine.Tinebase.appMgr.get('Messenger').blinkTitle) + "! ===";
+            
+            Tine.Tinebase.appMgr.get('Messenger').blinking = true;
             Tine.Tinebase.appMgr.get('Messenger').blinkTimer = window.setInterval(function () {
-                var i18n = Tine.Tinebase.appMgr.get('Messenger').i18n,
-                    title = Tine.Tinebase.appMgr.get('Messenger').windowOriginalTitle,
-                    blink = "=== " + i18n._(Tine.Tinebase.appMgr.get('Messenger').blinkTitle) + "! ===";
-
                     document.title = document.title == blink ? title : blink;
             }, 500);
-            Tine.Tinebase.appMgr.get('Messenger').blinking = true;
+        }
+    },
+    
+    saveHistory: function (message) {
+        var jid = Strophe.getBareJidFromJid(Tine.Tinebase.appMgr.get('Messenger').getConnection().jid),
+            from = $(message).attr('from') ? Strophe.getBareJidFromJid($(message).attr('from')) : jid,
+            to = Strophe.getBareJidFromJid($(message).attr('to')),
+            body = $(message).find("html > body"),
+            contact = jid == from ? to : from,
+            direction = jid == from ? 'from' : 'to',
+            msg;
+        
+        if (body.length === 0) {
+            body = $(message).find("body");
+            if (body.length === 0) {
+                $(message).children('thread').remove();
+                $(message).children('x').remove();
+                msg = $(message).text();
+            }
+        }
+        
+        if (!msg)
+            msg = body.text();
+        
+        if (msg) {
+            Ext.Ajax.request({
+                method: 'post',
+                params: {
+                    method: 'Messenger.saveHistory',
+                    jid: Strophe.getBareJidFromJid(jid),
+                    contact: Strophe.getBareJidFromJid(contact),
+                    direction: direction,
+                    message: msg,
+                    time: Tine.Messenger.Util.returnTimestamp()
+                },
+                success: function (response) {
+                    console.log(response);
+                },
+                failure: function (err, details) {
+                    // Save in cookie or localStorage.
+                    // Try again until can save.
+                    // When successful sends
+                    //   and cleans cookie or localStorage.
+                    console.log(err);
+                    console.log(details);
+                }
+            });
         }
     }
     
