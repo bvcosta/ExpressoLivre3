@@ -54,81 +54,7 @@ Tine.Messenger.ChatHandler = {
                 privy: privy
             });
 
-            chat.on('hide', function (window_chat) {
-                var chat_table = window_chat.getComponent('messenger-chat-table'),
-                    chat_area = chat_table.getComponent('messenger-chat-body'),
-                    chat_lines = chat_area.items.items;
-                    
-                var chat_text = '',
-                    host = window.location.host,
-                    protocol = window.location.protocol;
-                if (!PAGE_RELOAD && chat_lines.length > 0 && Tine.Messenger.registry.get('preferences').get('chatHistory') != 'dont') {
-                    for (var i = 0; i < chat_lines.length; i++)
-                        chat_text += chat_lines[i].body.dom.innerHTML + '<br style="clear: both;"/>';
-
-                    chat_text = chat_text.replace(/src\=\"/gi, 'src="' + protocol + '//' + host);
-                    
-                    Ext.Ajax.request({
-                        method: 'post',
-                        params: {
-                            method: 'Messenger.saveChatHistory',
-                            id: chat.id,
-                            title: chat.title,
-                            content: chat_text
-                        },
-                        success: function (result, request) {
-                            var response = JSON.parse(result.responseText);
-                            
-                            if (response.status == 'OK') {
-                                switch (Tine.Messenger.registry.get('preferences').get('chatHistory')) {
-                                    case 'download':
-                                        Ext.Msg.confirm(
-                                            app.i18n._('Chat History'),
-                                            app.i18n._('You chose to download the every chat history') + '.<br>' +
-                                            app.i18n._('Do you want to download this chat') + '?',
-                                            function (id) {
-                                                var downloader = new Ext.ux.file.Download({
-                                                    params: {
-                                                        method: 'Messenger.getFile',
-                                                        name: response.fileName,
-                                                        tmpfile: response.filePath,
-                                                        downloadOption: id // 'yes' or 'no'
-                                                    }
-                                                });
-                                                downloader.start();
-                                            }
-                                        );
-                                        break;
-                                    case 'email':
-                                        // Send the file as an e-mail attachment
-                                        break;
-                                }
-                            } else if (response.status == 'NO_FILE') {
-                                Ext.Msg.show({
-                                    title: app.i18n._('File Transfer'),
-                                    msg: app.i18n._('Chat has no content') + '!',
-                                    buttons: Ext.Msg.OK,
-                                    icon: Ext.MessageBox.INFO,
-                                    width: 300
-                                });
-                            } else {
-                                Ext.Msg.show({
-                                    title: app.i18n._('File Transfer Error'),
-                                    msg: app.i18n._('Error creating chat history file') + '!',
-                                    buttons: Ext.Msg.OK,
-                                    icon: Ext.MessageBox.ERROR,
-                                    width: 300
-                                });
-                            }
-                        },
-                        failure: function (err, details) {
-                            console.log(err);
-                            console.log(details);
-                            Tine.Messenger.Log.error(app.i18n._('Temporary files not deleted'));
-                        }
-                    });
-                }
-            });
+            chat.on('hide', Tine.Messenger.ChatHandler.downloadChatText);
             
             new_chat = true;
         }
@@ -139,7 +65,7 @@ Tine.Messenger.ChatHandler = {
         for (var i = 0; i < htmlChatTextFields.length; i++) {
             var chatTextField = Ext.getCmp(htmlChatTextFields[i].id);
             if (chatTextField.hasFocus) {
-                focusedChat = chatTextField.ownerCt;
+                focusedChat = chatTextField.ownerCt.ownerCt.ownerCt;
                 break;
             }
         }
@@ -157,8 +83,93 @@ Tine.Messenger.ChatHandler = {
             Tine.Messenger.ChatHandler.setChatMessage(jid, name + ' ' + app.i18n._('is unavailable'), app.i18n._("Info"), 'messenger-notify');
             Tine.Messenger.ChatHandler.setChatMessage(jid, app.i18n._('Your messages will be sent offline'), app.i18n._('Info'), 'messenger-notify');
         }
-    
+	
+
+	(function() {
+	    Tine.Messenger.VideoChat.setIconVisible( 
+		chat, 
+		Tine.Messenger.VideoChat.enabled && !Tine.Messenger.RosterHandler.isContactUnavailable(jid)
+	    )
+	}).defer(50);
+   
         return chat;
+    },
+    
+    downloadChatText: function (window_chat) {
+        var i18n = Tine.Tinebase.appMgr.get('Messenger').i18n,
+            chat_table = window_chat.getComponent('messenger-chat-textchat').getComponent('messenger-chat-table'),
+            chat_area = chat_table.getComponent('messenger-chat-body'),
+            chat_lines = chat_area.items.items;
+
+        var chat_text = '',
+            host = window.location.host,
+            protocol = window.location.protocol;
+        if (!PAGE_RELOAD && chat_lines.length > 0 && Tine.Messenger.registry.get('preferences').get('chatHistory') != 'dont') {
+            for (var i = 0; i < chat_lines.length; i++)
+                chat_text += chat_lines[i].body.dom.innerHTML + '<br style="clear: both;"/>';
+
+            chat_text = chat_text.replace(/src\=\"/gi, 'src="' + protocol + '//' + host);
+
+            Ext.Ajax.request({
+                method: 'post',
+                params: {
+                    method: 'Messenger.saveChatHistory',
+                    id: window_chat.id,
+                    title: window_chat.title,
+                    content: chat_text
+                },
+                success: function (result, request) {
+                    var response = JSON.parse(result.responseText);
+
+                    if (response.status == 'OK') {
+                        switch (Tine.Messenger.registry.get('preferences').get('chatHistory')) {
+                            case 'download':
+                                Ext.Msg.confirm(
+                                    i18n._('Chat History'),
+                                    i18n._('You chose to download the every chat history') + '.<br>' +
+                                    i18n._('Do you want to download this chat') + '?',
+                                    function (id) {
+                                        var downloader = new Ext.ux.file.Download({
+                                            params: {
+                                                method: 'Messenger.getFile',
+                                                name: response.fileName,
+                                                tmpfile: response.filePath,
+                                                downloadOption: id // 'yes' or 'no'
+                                            }
+                                        });
+                                        downloader.start();
+                                    }
+                                );
+                                break;
+                            case 'email':
+                                // Send the file as an e-mail attachment
+                                break;
+                        }
+                    } else if (response.status == 'NO_FILE') {
+                        Ext.Msg.show({
+                            title: i18n._('File Transfer'),
+                            msg: i18n._('Chat has no content') + '!',
+                            buttons: Ext.Msg.OK,
+                            icon: Ext.MessageBox.INFO,
+                            width: 300
+                        });
+                    } else {
+                        Ext.Msg.show({
+                            title: i18n._('File Transfer Error'),
+                            msg: i18n._('Error creating chat history file') + '!',
+                            buttons: Ext.Msg.OK,
+                            icon: Ext.MessageBox.ERROR,
+                            width: 300
+                        });
+                    }
+                },
+                failure: function (err, details) {
+                    console.log(err);
+                    console.log(details);
+                    Tine.Messenger.Log.error(i18n._('Temporary files not deleted'));
+                }
+            });
+        }
     },
     
     /**
@@ -168,7 +179,7 @@ Tine.Messenger.ChatHandler = {
     adjustChatAreaHeight: function(_chat_id, _width, _height){
       var chat = Ext.getCmp(_chat_id);
       if(chat.isVisible()){
-        var chat_table = chat.getComponent('messenger-chat-table'),
+	var chat_table = chat.getComponent('messenger-chat-textchat').getComponent('messenger-chat-table'),
             chat_area = chat_table.getComponent('messenger-chat-body'),
             chat_table_height = chat_table.body.dom.clientHeight,
             chat_area_height = chat_area.body.dom.clientHeight;
@@ -215,19 +226,25 @@ Tine.Messenger.ChatHandler = {
                  +'    <span class="chat-user-msg">' + msg + '</span>'
                  +'</div>';
         }
+        if (flow == 'messenger-chat-state') {
+            txt = '<div class="chat-message-state">'
+                 + msg
+                 +'</div>';
+        }
         return txt;
     },
     
     /** flow parameter:
-     *      'messenger-send' => message that user send
-     *      'messenger-receive' => message that user received
-     *      'messenger-notify' => notification that user received
+     *      'messenger-send'       => message that user send
+     *      'messenger-receive'    => message that user received
+     *      'messenger-notify'     => notification that user received
+     *      'messenger-chat-state' => notification about composing messages
      */
     setChatMessage: function (id, msg, name, flow, stamp, color) {
         var chat_id = Tine.Messenger.ChatHandler.formatChatId(id),
-            chat_table = Ext.getCmp(chat_id).getComponent('messenger-chat-table'),
+	    chat_table = Ext.getCmp(chat_id).getComponent('messenger-chat-textchat').getComponent('messenger-chat-table'),
             chat_area = chat_table.getComponent('messenger-chat-body');
-            
+
         msg = Tine.Messenger.ChatHandler.replaceLinks(msg);
         var msg_with_emotions = Tine.Messenger.ChatHandler.replaceEmotions(msg);
         
@@ -236,8 +253,10 @@ Tine.Messenger.ChatHandler = {
             html: Tine.Messenger.ChatHandler.formatMessage(msg_with_emotions, name, flow, stamp, color),
             cls: 'chat-message'
         });
-        chat_area.doLayout();
         
+        Tine.Messenger.ChatHandler.hideChatNotifications();
+        
+        chat_area.doLayout();
         chat_area.body.scroll('down', 500);
     },
     
@@ -251,26 +270,19 @@ Tine.Messenger.ChatHandler = {
             composing = $(message).find("composing"),
             paused = $(message).find("paused");
 
-        // Capture the message body element, 
-        // extract text and append to chat area
-        var body = $(message).find("html > body");
-        if (body.length === 0) {
-            body = $(message).find("body");
-        }
+        var html_body = $(message).find("html > body"),
+            text_body = $(message).find("body"),
+            msg;
 
-        // Typing events
-        if (body.length > 0){
-            // Shows the specific chat window
+        if (html_body.length > 0 || text_body.length > 0){
             Tine.Messenger.ChatHandler.showChatWindow(jid, name, type);
-            // Set received chat message
-            Tine.Messenger.ChatHandler.setChatMessage(jid, body.text(), name, 'messenger-receive');
-            Tine.Messenger.ChatHandler.setChatState(jid);
-            // If in another tab, it will blink!
-            Tine.Messenger.ChatHandler.blinkTitle();
-        } else if ($(message).find('thread') || $(message).find('x')) { // Expresso V2 special case
+            msg = html_body.length > 0 ? html_body.html() : text_body.text();
+            Tine.Messenger.ChatHandler.chatMessageRoutine(jid, msg, name);
+        } else if ($(message).find('thread').length > 0 || $(message).find('x').length > 0) { // Expresso V2 special case
             $(message).children('thread').remove();
             $(message).children('x').remove();
-            body = $(message).text();
+            msg = $(message).text();
+            Tine.Messenger.ChatHandler.chatMessageRoutine(jid, msg, name);
         } else if (composing.length > 0) {
             Tine.Messenger.ChatHandler.setChatState(jid, name + app.i18n._(' is typing...'));
         } else if (paused.length > 0) {
@@ -282,26 +294,33 @@ Tine.Messenger.ChatHandler = {
         return true;
     },
     
+    chatMessageRoutine: function (jid, message, name) {
+        Tine.Messenger.ChatHandler.setChatMessage(jid, message, name, 'messenger-receive');
+        Tine.Messenger.ChatHandler.setChatState(jid);
+        Tine.Messenger.ChatHandler.blinkTitle();
+    },
+    
     setChatState: function (id, state) {
         var app = Tine.Tinebase.appMgr.get('Messenger');
         var chat_id = Tine.Messenger.ChatHandler.formatChatId(id),
             chat = Ext.getCmp(chat_id);
-       
+
         if(chat){
-            var node = chat.getComponent('messenger-chat-notifications');
+            var node = chat.getComponent('messenger-chat-textchat').getComponent('messenger-chat-notifications');
             if(state){
                 var message = state,
                     html = '',
                     type = '';
+                    
+                Tine.Messenger.ChatHandler.hideChatNotifications();
 
                 html = Tine.Messenger.ChatHandler.formatChatStateMessage(message, type);
-                node.body.dom.innerHTML = html;
-                node.show();
 
+                Tine.Messenger.ChatHandler.setChatMessage(id, html, '', 'messenger-chat-state');
                 if (app.i18n._(state).search(app.i18n._(Tine.Messenger.ChatHandler.PAUSED_STATE)) >= 0) {
                     Tine.Messenger.ChatHandler.clearPausedStateMessage = setTimeout(
                         function () {
-                            node.hide();
+                            Tine.Messenger.ChatHandler.hideChatNotifications();
                         },
                         2000
                     );
@@ -309,16 +328,23 @@ Tine.Messenger.ChatHandler = {
                     clearTimeout(Tine.Messenger.ChatHandler.clearPausedStateMessage);
                 }
             } else {
-                node.hide();
+                Tine.Messenger.ChatHandler.hideChatNotifications();
             }
         }
     },
     
     formatChatStateMessage: function(message, type){
-        var html = '<div class="chat-notification">' 
+        var html = '<span class="chat-notification">' 
                   +    message
-                  +'</div>';
+                  +'</span>';
         return html;
+    },
+    
+    hideChatNotifications: function () {
+        var chat_notifications = Ext.query('.chat-message-state .chat-notification');
+        Ext.each(chat_notifications, function (item, index) {
+            item.parentNode.removeChild(item);
+        });
     },
     
     /**
@@ -349,11 +375,13 @@ Tine.Messenger.ChatHandler = {
     
     sendMessage: function (msg, id) {
         var myNick = Tine.Messenger.Credential.myNick();
-        var message = $msg({
-            "to": Tine.Messenger.Util.idToJid(id),
-            "type": 'chat'
-        }).c("body").t(msg).up()
-          .c("active", {xmlns: "http://jabber.org/protocol/chatstates"});
+        var message = $msg({'to': Tine.Messenger.Util.idToJid(id)});
+        message.attrs({'type': 'chat'})
+            .c("active", {xmlns: "http://jabber.org/protocol/chatstates"}).up()
+            .c('html', {xmlns: Strophe.NS.XHTML_IM})
+            .c('body', {xmlns: Strophe.NS.XHTML})
+            .h(msg);
+            
         Tine.Messenger.Application.connection.send(message);
         Tine.Messenger.ChatHandler.setChatMessage(id, msg, myNick);
         
@@ -386,7 +414,7 @@ Tine.Messenger.ChatHandler = {
     },
     
     replaceLinks: function(message) {
-        return message.replace(/(http|https|ftp|ftps):\/\/([\S]+)/gi, '<a href="$1://$2" target="_blank">$1://$2</a>');
+        return message.replace(/[^<[\S]+](http|https|ftp|ftps):\/\/([\S]+)[^[\S]+>]/gi, '<a href="$1://$2" target="_blank">$1://$2</a>');
     },
     
     disconnect: function() {
@@ -426,7 +454,7 @@ Tine.Messenger.ChatHandler = {
         var html = '<div class="chat-notification">' 
                   +    message
                   +'</div>';
-        var node = chat.getComponent('messenger-chat-notifications');
+	var node = chat.getComponent('messenger-chat-textchat').getComponent('messenger-chat-notifications');
         node.hide();
 //        html.delay(8000).fadeOut("slow");
         node.body.dom.innerHTML = html;
@@ -498,6 +526,123 @@ Tine.Messenger.ChatHandler = {
                 }
             });
         }
+    },
+    
+    sendGroupMessage: function (menu_item) {
+        var nodes = menu_item.node.childNodes,
+            ids = [];
+
+        for (var i = 0; i < nodes.length; i++)
+            ids.push('<span style="font-weight: bold;">' + Tine.Messenger.RosterHandler.getContactElement(nodes[i].id).text + '</span>');
+        
+        ids = ids.join(', ');
+        
+        var windowGroupMsg = new Ext.Window({
+            id: 'messenger-group-message-window',
+            title: Tine.Tinebase.appMgr.get('Messenger').i18n._('Group Message'),
+            closeAction: 'close',
+            height: 350,
+            width: 450,
+            layout: 'border',
+            tbar: [
+                {
+                    xtype: 'button',
+                    itemId: 'messenger-chat-emoticons',
+                    icon: '/images/messenger/emoticons/smile.png',
+                    tooltip: Tine.Tinebase.appMgr.get('Messenger').i18n._('Choose a Emoticon'),
+                    listeners: {
+                        scope: this,
+                        click: function() {
+                            var emoticonWindow,
+                                mainChatWindow = this,
+                                emoticonsPath = '/images/messenger/emoticons',
+                                check = [];
+                                
+                            if (Ext.getCmp('emoticon-window-choose')) {
+                                emoticonWindow = Ext.getCmp('emoticon-window-choose');
+                            } else {
+                                emoticonWindow = new Ext.Window({
+                                    id: 'emoticon-window-choose',
+                                    autoScroll: true,
+                                    closeAction: 'hide',
+                                    layout: {
+                                        type: 'table',
+                                        columns: 10
+                                    },
+                                    margins: {
+                                        top: 5,
+                                        left: 5
+                                    },
+                                    height: 175,
+                                    width: 290,
+                                    title: Tine.Tinebase.appMgr.get('Messenger').i18n._('Choose a Emoticon')
+                                });
+
+                                Ext.each(EMOTICON.emoticons, function (item, index) {
+                                    if (check.indexOf(EMOTICON.translates[index]) < 0) {
+                                        check.push(EMOTICON.translates[index]);
+                                        emoticonWindow.add({
+                                            xtype: 'button',
+                                            icon: emoticonsPath + '/' + EMOTICON.translates[index] + '.png',
+                                            cls: 'emoticon-button',
+                                            tooltip: EMOTICON.translates[index].toUpperCase(),
+                                            emoticon: item,
+                                            handler: function () {
+                                                var textarea = Ext.getCmp('messenger-group-message-text');
+                                                Tine.Messenger.Util.insertAtCursor(textarea, this.emoticon)
+                                                emoticonWindow.close();
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            
+                            emoticonWindow.show();
+                        }
+                    }
+                 }
+            ],
+            buttons: [
+                {
+                    text: Tine.Tinebase.appMgr.get('Messenger').i18n._('Send'),
+                    handler: function () {
+                        var msg = Ext.getCmp('messenger-group-message-text').getValue();
+                        for (var i = 0; i < nodes.length; i++) {
+                            Tine.Messenger.Application.connection.send($msg({
+                                "to": nodes[i].id,
+                                "type": 'chat'})
+                            .c("body").t(msg).up()
+                            .c("active", {xmlns: "http://jabber.org/protocol/chatstates"}));
+                        }
+                        windowGroupMsg.close();
+                    }
+                },
+                {
+                    text: Tine.Tinebase.appMgr.get('Messenger').i18n._('Cancel'),
+                    handler: function () {
+                        windowGroupMsg.close();
+                    }
+                }
+            ],
+            items: [
+                {
+                    xtype: 'panel',
+                    id: 'messenger-group-message-list',
+                    region: 'north',
+                    border: false,
+                    frame: false,
+                    bodyStyle: 'background: transparent',
+                    html: '<h1>' + Tine.Tinebase.appMgr.get('Messenger').i18n._('Send message to:') + '</h1>' + ids
+                },
+                {
+                    xtype: 'textarea',
+                    id: 'messenger-group-message-text',
+                    region: 'center'
+                }
+            ]
+        });
+        
+        windowGroupMsg.show();
     }
     
 };

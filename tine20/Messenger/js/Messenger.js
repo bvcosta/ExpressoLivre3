@@ -221,6 +221,7 @@ Tine.Messenger.Application = Ext.extend(Tine.Tinebase.Application, {
         Ext.getCmp('connectloading').show();
         
         this.connectToJabber();
+	this.initVideoChat();
         
         Ext.getCmp("ClientDialog").show();
 
@@ -238,6 +239,13 @@ Tine.Messenger.Application = Ext.extend(Tine.Tinebase.Application, {
         Tine.Messenger.IM.changeSystemLogonButton(['startup', 'Login']);
     },
     
+    initVideoChat: function(){
+	var rtmfpServerUrl = Ext.util.Format.trim(Tine.Messenger.registry.get('rtmfpServerUrl'));
+	Tine.Messenger.VideoChat.enabled = (rtmfpServerUrl != '' && rtmfpServerUrl !== null);
+	Tine.Messenger.VideoChat.rtmfpServerUrl = rtmfpServerUrl;
+	
+    },
+    
     getConnection: function () {
         return Tine.Messenger.Application.connection;
     },
@@ -253,7 +261,7 @@ Tine.Messenger.Application = Ext.extend(Tine.Tinebase.Application, {
                          Tine.Tinebase.registry.get('currentAccount').accountEmailAddress;
         Tine.Messenger.Application.connection.connect(
             Tine.Messenger.Util.getJidFromConfig(),
-            base64.encode(textToSend),
+            Base64.encode(textToSend),
             Tine.Messenger.Util.callbackWrapper(Tine.Tinebase.appMgr.get('Messenger').connectionHandler),
             20
         );
@@ -313,6 +321,12 @@ Tine.Messenger.Application = Ext.extend(Tine.Tinebase.Application, {
                 Tine.Messenger.Util.callbackWrapper(Tine.Messenger.FileTransfer.onRequest),
                 null, 'message', 'filetransfer'
             );
+	    
+	    // Video Chat
+            XMPPConnection.addHandler(
+                Tine.Messenger.Util.callbackWrapper(Tine.Messenger.VideoChat.onRequest),
+                null, 'message', 'videochat'
+            );
                 
             // Conference handler
             XMPPConnection.addHandler(
@@ -324,17 +338,6 @@ Tine.Messenger.Application = Ext.extend(Tine.Tinebase.Application, {
             var roster = $iq({"type": "get"}).c("query", {"xmlns": "jabber:iq:roster"});
             XMPPConnection.sendIQ(
                 roster, Tine.Messenger.Util.callbackWrapper(Tine.Messenger.RosterHandler._onStartRoster)
-            );
-                
-            // Updating Roster
-            XMPPConnection.addHandler(
-                Tine.Messenger.Util.callbackWrapper(Tine.Messenger.RosterHandler._onRosterUpdate),
-                'jabber:client', 'iq', 'set'
-            );
-              
-            XMPPConnection.addHandler(
-                Tine.Messenger.Util.callbackWrapper(Tine.Messenger.RosterHandler._onRosterGet),
-                'jabber:client', 'iq', 'get'
             );
                 
             XMPPConnection.addHandler(
@@ -352,11 +355,6 @@ Tine.Messenger.Application = Ext.extend(Tine.Tinebase.Application, {
                 null, 'message', 'error'
             );
                 
-            XMPPConnection.addHandler(
-                Tine.Messenger.Util.callbackWrapper(Tine.Messenger.LogHandler._getPresence),
-                'jabber:client', 'presence'
-            );
-        
             // Start unload events
             window.onbeforeunload = function () {
                 Tine.Tinebase.appMgr.get('Messenger').stopMessenger(Tine.Tinebase.appMgr.get('Messenger').i18n._('Leave page') + '!');
@@ -431,6 +429,9 @@ Tine.Messenger.IM = {
         
         // Enable Priority settings
         Ext.getCmp('messenger-change-priority').enable();
+        
+        // Enable Collapse/Expand Groups
+        Ext.getCmp('messenger-expand-collapse-groups').enable();
     },
     disableOnDisconnect: function(){
         // Change IM icon
@@ -455,6 +456,9 @@ Tine.Messenger.IM = {
         
         // Disable Priority settings
         Ext.getCmp('messenger-change-priority').disable();
+        
+        // Disable Collapse/Expand Groups
+        Ext.getCmp('messenger-expand-collapse-groups').disable();
 
         // Close all chats
         var chats = Ext.query('.messenger-chat-window');
@@ -511,22 +515,37 @@ Tine.Messenger.IM = {
         
         pn.setIcon('images/messenger/' + texts[0] + '.png');
         pn.setTooltip(i18n._(texts[1]));
+    },
+    changeTreeviewGroupsDisplay: function (button) {
+        var i18n = Tine.Tinebase.appMgr.get('Messenger').i18n;
+        
+        if (button.collapsed) {
+            Tine.Messenger.RootNode().expandChildNodes(true);
+            button.setTooltip(i18n._('Collapse groups'));
+            button.setIcon('/images/messenger/collapse.png');
+            button.collapsed = false;
+        } else {
+            Tine.Messenger.RootNode().collapseChildNodes(true);
+            button.setTooltip(i18n._('Expand groups'));
+            button.setIcon('/images/messenger/expand.png');
+            button.collapsed = true;
+        }
     }
 };
 
 Tine.Messenger.Util = {
     
     getJidFromConfig: function () {
-        var domain = Tine.Tinebase.registry.get('messenger').messenger.domain,
-            resource = Tine.Tinebase.registry.get('messenger').messenger.resource,
-            name = Tine.Messenger.Util.getJabberName(Tine.Tinebase.registry.get('messenger').messenger.format);
+        var domain = Tine.Messenger.registry.get('domain'),
+            resource = Tine.Messenger.registry.get('resource'),
+            name = Tine.Messenger.Util.getJabberName(Tine.Messenger.registry.get('format'));
         
         return name + '@' + domain + '/' + resource;
     },
     
     getJidFromConfigNoResource: function () {
-        var domain = Tine.Tinebase.registry.get('messenger').messenger.domain,
-            name = Tine.Messenger.Util.getJabberName(Tine.Tinebase.registry.get('messenger').messenger.format),
+        var domain = Tine.Messenger.registry.get('domain'),
+            name = Tine.Messenger.Util.getJabberName(Tine.Messenger.registry.get('format')),
             jid = '';
             
         if (name != null)
@@ -546,7 +565,7 @@ Tine.Messenger.Util = {
                 name = Tine.Tinebase.registry.get('userContact').account_id;
                 break;
             default:
-                name = Tine.Tinebase.registry.get('messenger').messenger.custom_name;
+                name = Tine.Messenger.registry.get('preferences').map.name;
         }
         
         return name;

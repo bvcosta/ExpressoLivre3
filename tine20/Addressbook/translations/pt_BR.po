@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Tine 2.0 - Addressbook\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-01-14 16:49-0300\n"
+"PO-Revision-Date: 2013-02-15 16:50-0300\n"
 "Last-Translator: Lavoisier Vieira <lavoisier.vieira@serpro.gov.br>\n"
 "Language-Team: Tine 2.0 Translators\n"
 "MIME-Version: 1.0\n"
@@ -798,4 +798,20 @@ msgstr "Adicionar como \"Bcc\""
 #: js/ContactGrid.js:287
 msgid "Remove from recipients"
 msgstr "Remover dos destinatários"
+
+#: /Felamimail/js/ContactGrid.js:113
+msgid "To"
+msgstr "Para"
+
+#: /Felamimail/js/ContactGrid.js:113
+msgid "Cc"
+msgstr "Cc"
+
+#: /Felamimail/js/ContactGrid.js:113
+msgid "Bcc"
+msgstr "Cco"
+
+#: /Felamimail/js/ContactGrid.js:113
+msgid "None"
+msgstr "Nenhum"
 

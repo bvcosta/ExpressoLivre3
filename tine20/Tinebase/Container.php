@@ -1058,7 +1058,7 @@ class Tinebase_Container extends Tinebase_Backend_Sql_Abstract
         
         $accountId = Tinebase_Model_User::convertUserIdToInt($_accountId);
         
-        $select = $this->_getSelect(array('container.id','container.name'), TRUE)
+        $select = $this->_getSelect(array('id' => 'container.id','name' => 'container.name'), TRUE)
             ->where("{$this->_db->quoteIdentifier('container.id')} IN (?)", array_keys($containers))
             ->join(array(
                 /* table  */ 'container_acl' => SQL_TABLE_PREFIX . 'container_acl'), 
@@ -1076,7 +1076,7 @@ class Tinebase_Container extends Tinebase_Backend_Sql_Abstract
         $rows = Array();
         $last_arr = Array();
         foreach ($arr as $row) {
-            if ($last_arr['container_id'] === $row['container_id']) {
+            if ((isset($last_arr['container_id'])) && ($last_arr['container_id'] === $row['container_id'])) {
                 $row['account_grants'] = $last_arr['account_grants'] . ',' . $row['account_grants'];
                 end($rows);
                 $rows[key($rows)] = $row;

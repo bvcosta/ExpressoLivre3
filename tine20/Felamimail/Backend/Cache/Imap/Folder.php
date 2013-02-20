@@ -86,6 +86,23 @@ class Felamimail_Backend_Cache_Imap_Folder extends Felamimail_Backend_Cache_Imap
         return $result;
     }
     
+    public function getAllFolderIdsFromAccount($_accountId)
+    {
+        $return = array();
+        $account = ($_accountId instanceof Felamimail_Model_Account) ? $_accountId : Felamimail_Controller_Account::getInstance()->get($_accountId);
+        $imap = Felamimail_Backend_ImapFactory::factory($account);
+        $folders = $imap->getFolders('', '*', $account);
+        foreach ($folders as $folder)
+        {
+            //$folderId = self::encodeFolderUid($folder, $account->id);
+            if ($folder['isSelectable'])
+            {
+                $return[self::encodeFolderUid($folder['globalName'], $account->id)] = array($account->id, Felamimail_Model_Folder::decodeFolderName($folder['globalName']));
+            }
+        }
+        return $return;
+    }
+    
     /**
      * get folders from imap
      * 
@@ -109,7 +126,7 @@ class Felamimail_Backend_Cache_Imap_Folder extends Felamimail_Backend_Cache_Imap
                 foreach ($_folderName as $folder)
                 {
                     $decodedFolder = self::decodeFolderUid($folder);
-                    $folders = array_merge($folders, $this->_getFolder($_account, $decodedFolder['globalName']));
+                    $folders = array_merge($folders, $this->_getFolder($_account, Felamimail_Model_Folder::decodeFolderName($decodedFolder['globalName'])));
                 }
             }  
         }
@@ -283,11 +300,16 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Fol
              * @todo must see if it is not better do this on the model directly
              */
             $systemFolders = FALSE;
-            if (strtolower($folder[$folderDecoded['globalName']]['parent']) === 'inbox')
+            if (strtolower($globalName) === 'inbox')
+            {
+                $systemFolders = TRUE;
+            }
+            else if (strtolower($folder[$folderDecoded['globalName']]['parent']) === 'inbox')
             {
                 $systemFolders = in_array(strtolower($folder[$folderDecoded['globalName']]['localName']), 
                                                        Felamimail_Controller_Folder::getInstance()->getSystemFolders($folderDecoded['accountId']));
             }
+            
             $localName = Felamimail_Model_Folder::decodeFolderName($folder[$folderDecoded['globalName']]['localName']);
             
             if(ereg("^user/[0-9]{11}$",Felamimail_Model_Folder::decodeFolderName($folder[$folderDecoded['globalName']]['globalName'])))

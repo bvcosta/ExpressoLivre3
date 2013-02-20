@@ -9,8 +9,8 @@ Tine.Messenger.Chat = Ext.extend(Ext.Window, {
         cls:         'messenger-chat-window',
         width:       460,
         minWidth:    400,
-        height:      360,
-        minHeight:   280,
+        height:      378,
+        minHeight:   378,
         closeAction: 'hide', //'close' - destroy the component
         collapsible: true,
         plain:       true,
@@ -33,16 +33,21 @@ Tine.Messenger.Chat = Ext.extend(Ext.Window, {
                         Tine.Messenger.FileTransfer.sendRequest(jid, filebrowser);
                     }
                 },
-//                {
-//                    xtype: 'button',
-//                    itemId: 'messenger-chat-video',
-//                    icon: '/images/messenger/webcam.png',
-//                    tooltip: app.i18n._('Start video chat'),
-//                    disabled: true,
-//                    handler: function() {
-//
-//                    }
-//                 },
+                {
+                    xtype: 'button',
+                    itemId: 'messenger-chat-video',
+                    icon: '/images/messenger/webcam.png',
+                    tooltip: app.i18n._('Start video chat'),
+                    hidden: true,
+                    handler: function() {
+						var window_chat = this.ownerCt.ownerCt,
+						id = window_chat.id.substr(MESSENGER_CHAT_ID_PREFIX.length),
+                        jid = Tine.Messenger.Util.idToJid(id);
+
+						Tine.Messenger.VideoChat.startVideo(window_chat, id, jid);
+                  
+                    }
+                 },
                  {
                     xtype: 'button',
                     itemId: 'messenger-chat-emoticons',
@@ -86,8 +91,8 @@ Tine.Messenger.Chat = Ext.extend(Ext.Window, {
                                             tooltip: EMOTICON.translates[index].toUpperCase(),
                                             emoticon: item,
                                             handler: function () {
-                                                var textfield = mainChatWindow.find('name', 'textfield-chat-message')[0];
-                                                Tine.Messenger.Util.insertAtCursor(textfield, this.emoticon)
+                                                var textfield = mainChatWindow.getComponent('messenger-chat-textchat').getComponent(1).getComponent(0);
+                                                textfield.insertAtCursor('<img src="' + this.icon + '" />');
                                                 emoticonWindow.close();
                                             }
                                         });
@@ -141,14 +146,25 @@ Tine.Messenger.Chat = Ext.extend(Ext.Window, {
             },
             move: function(_box){
                 Tine.Messenger.Window._onMoveWindowAction(_box);
-            }
+            },
+	    beforehide: function(_box){
+		// only if the chat being closed is the one using videochat
+		if(Tine.Messenger.VideoChat.jid != null && Tine.Messenger.VideoChat.getChatWindow(Tine.Messenger.VideoChat.jid).id == _box.id){
+		    Tine.Messenger.VideoChat.hangup(_box);
+		}
+	    },
+	    beforecollapse: function(_box){
+		if(Tine.Messenger.VideoChat.state != VideoChatStates.IDLE){
+		    return false;
+		}
+	    }
         }
   });
         Tine.Messenger.Chat.superclass.constructor.apply(this, arguments);
     },
     
     setTextfieldFocus: function () {
-        this.getComponent(2).focus(false, 200); // foco no textfield
+        this.getComponent('messenger-chat-textchat').getComponent(1).getComponent(0).focus(false, 200); // foco no textfield
     }
     
 });

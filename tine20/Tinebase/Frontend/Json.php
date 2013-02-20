@@ -439,8 +439,48 @@ class Tinebase_Frontend_Json extends Tinebase_Frontend_Json_Abstract
     public function login($username, $password, $securitycode=NULL)
     {
         // try to login user
-        $success = (Tinebase_Controller::getInstance()->login($username, $password, $_SERVER['REMOTE_ADDR'], 'TineJson', $securitycode) === TRUE);
-
+        $success = Tinebase_Controller::getInstance()->login($username, $password, $_SERVER['REMOTE_ADDR'], 'TineJson', $securitycode);
+        $msgerror = "Your username and/or your password are wrong!!!";
+        if(is_array($success) && isset($success[0]))
+        {
+            switch($success[0])
+            {
+                case 'NOT_ACCESS':
+                    {
+                        $response = array(
+                                    'success'      => FALSE,
+                                    'errorMessage' => "The account is not authorized to login. Please contact the system administrator."
+                            );
+                        break;
+                    }
+                case 'ERROR':
+                    {
+                        $response = array(
+                                    'success'      => FALSE,
+                                    'errorMessage' => "$msgerror"
+                            );
+                        break;
+                    }   
+                case 'BLOCKED':
+                    {
+                        $response = array(
+                                    'success'      => FALSE,
+                                    'errorMessage' => "Login is not permitted. Wait 20 minutes to try again."
+                            );
+                        break;
+                    }
+                default:
+                    {
+                        $response = array(
+				'success'      => FALSE,
+				'errorMessage' => "$msgerror"
+			);
+                    }
+            }
+            Tinebase_Auth_CredentialCache::getInstance()->getCacheAdapter()->resetCache();
+            return $response;
+        }
+        
         if ($success) {
             $response = array(
 				'success'       => TRUE,
@@ -448,18 +488,22 @@ class Tinebase_Frontend_Json extends Tinebase_Frontend_Json_Abstract
 				'jsonKey'       => Tinebase_Core::get('jsonKey'),
                 'welcomeMessage' => "Welcome to Tine 2.0!"
             );
+            
+            // save in cookie (expires in 2 weeks)
+            setcookie('TINE20LASTUSERID', $username, time()+60*60*24*14);
+            
             $success = $this->_setCredentialCacheCookie();
         }
-
+        
         if (! $success) {
             Tinebase_Auth_CredentialCache::getInstance()->getCacheAdapter()->resetCache();
 
             $response = array(
 				'success'      => FALSE,
-				'errorMessage' => "Wrong username or password!"
-			);
+				'errorMessage' => "$msgerror"
+			);   
         }
-
+        
         return $response;
     }
 
@@ -597,7 +641,6 @@ class Tinebase_Frontend_Json extends Tinebase_Frontend_Json_Abstract
                 'mapPanel'          => Tinebase_Config::getInstance()->getConfig(Tinebase_Config::MAPPANEL, NULL, TRUE)->value,
                 'confirmLogout'     => Tinebase_Core::getPreference()->getValue(Tinebase_Preference::CONFIRM_LOGOUT, 1),
                 'persistentFilters' => Tinebase_Frontend_Json_PersistentFilter::getAllPersistentFilters(),
-                'messenger'         => $this->getMessengerConfig()
             );
         }
 
@@ -662,11 +705,6 @@ class Tinebase_Frontend_Json extends Tinebase_Frontend_Json_Abstract
         }       
 
         return $registryData;
-    }
-    
-    public function getMessengerConfig()
-    {
-        return Tinebase_Config::getInstance()->getConfigAsArray(Tinebase_Model_Config::MESSENGERCONFIG, 'Tinebase', array());
     }
 
     /**

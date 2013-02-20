@@ -3,7 +3,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n !=1;\n"
 "Project-Id-Version: Tine 2.0\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-01-14 16:50-0300\n"
+"PO-Revision-Date: 2013-02-15 16:39-0300\n"
 "Last-Translator: Lavoisier Vieira <lavoisier.vieira@serpro.gov.br>\n"
 "Language-Team:  <mario.kolling@serpro.gov.br>\n"
 "MIME-Version: 1.0\n"
@@ -624,6 +624,7 @@ msgstr "Aguarde, por favor"
 msgid "Login successful. Loading {0}..."
 msgstr "Login realizado com sucesso. Carregando {0}..."
 
+#: js/LoginPanel.js:427
 #: js/LoginPanel.js:354
 #: js/MainMenu.js:227
 msgid "Please wait!"
@@ -1125,7 +1126,7 @@ msgstr "é igual a"
 #: js/widgets/container/FilterModel.js:237
 #: js/widgets/grid/PickerFilter.js:310
 msgid "Selected  {0}"
-msgstr "Selecionado {0}"
+msgstr "{0}(s)"
 
 #: js/widgets/container/GrantsDialog.js:52
 msgid "Folder"
@@ -2622,8 +2623,8 @@ msgid "Completed."
 msgstr "Completado."
 
 #: /library/ExtJS/plugins/Ext.ux.form.HtmlEditor.Plugins/src/Ext.ux.form.HtmlEditor.UploadImage.js:866
-msgid "Upload Error."
-msgstr "Erro no carregamento."
+msgid "Upload error.<br/>Please check if the file size does not exceed {0} bytes."
+msgstr "Erro no carregamento.<br/>Por favor, verifique se o tamanho do arquivo a ser enviado não é superior a XXX bytes."
 
 #: /User/Ldap.php:314
 msgid "Server is readonly."
@@ -2632,6 +2633,10 @@ msgstr "Servidor somente de leitura."
 #: /Frontend/Json.php:174
 msgid "New password could not be set! Error: "
 msgstr "Senha não pode ser alterada! Erro: "
+
+#: /Frontend/Json.php:467
+msgid "Login is not permitted. Wait 20 minutes to try again."
+msgstr "Acesso bloqueado temporariamente. Aguarde 20 minutos para tentar novamente."
 
 #: /library/ExtJS/plugins/Ext.ux.form.HtmlEditor.Plugins/src/Ext.ux.form.HtmlEditor.Table.js:9
 msgid "Insert Table"
@@ -2676,4 +2681,9 @@ msgstr "Tracejada"
 #: /library/ExtJS/plugins/Ext.ux.form.HtmlEditor.Plugins/src/Ext.ux.form.HtmlEditor.Table.js:38
 msgid "Dotted"
 msgstr "Pontilhada"
+
+#LoginPanel.js:427
+#msgstr "Acesso não autorizado. Por favor, contate o Administrador do Expresso."
+msgid "The account is not authorized to login. Please contact the system administrator."
+msgstr "Acesso bloqueado de acordo com a Norma SG018. Favor procurar a SUPGP local."
 

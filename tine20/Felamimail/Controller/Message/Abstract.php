@@ -609,11 +609,13 @@ abstract class Felamimail_Controller_Message_Abstract extends Tinebase_Controlle
                 $body = Felamimail_Message::convertContentType($partStructure['contentType'], $_contentType, $body);
                 if ($bodyPart->type == Zend_Mime::TYPE_TEXT && $_contentType == Zend_Mime::TYPE_HTML) {
                     $body = Felamimail_Message::replaceUriAndSpaces($body);
-                    $body = Felamimail_Message::replaceEmails($body);
                 }
             } else {
                 if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' Do not convert ' . $bodyPart->type . ' part to ' . $_contentType);
             }
+            
+            // Use only Felamimail to send e-mails
+            $body = Felamimail_Message::replaceEmails($body);
             
             $messageBody .= $body;
         }
@@ -754,6 +756,7 @@ abstract class Felamimail_Controller_Message_Abstract extends Tinebase_Controlle
         Tinebase_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Purifying html body. (cache path: ' . $path .')');
         
         $config = HTMLPurifier_Config::createDefault();
+        $config->set('Core.LexerImpl', 'PH5P');
         $config->set('HTML.DefinitionID', 'purify message body contents'); 
         $config->set('HTML.DefinitionRev', 1);
         $config->set('CSS.AllowTricky', 1);
