@@ -23,28 +23,28 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
 //     * @var string
 //     */
 //    protected $_tableName = 'felamimail_cache_message';
-    
+
     const MAXSEARCHRESULTS = 1000;
-    
+
     /**
      * Model name
      *
      * @var string
      */
     protected $_modelName = 'Felamimail_Model_Message';
-    
+
     /**
     * default column(s) for count
     *
     * @var string
     */
     protected $_defaultCountCol = 'id';
-    
+
     protected $_imapSortParams = array('subject','from_name','from_email','to','size','received','sent');
-    
+
     protected $_accountMap = array();
     protected $_folderMap = array();
-    
+
     /**
      * foreign tables (key => tablename)
      *
@@ -76,14 +76,14 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
             'preserve'  => TRUE,
         ),
     );
-    
+
     /**
      * find existance of values recursivelly on array
      * @param array $array
      * @param type $search
      * @param type $mode
      * @return boolean
-     * 
+     *
      * @todo implement it as a static method on a helper class (Tinebase_Helper)
      */
     protected function _searchNestedArray(array $array, $search, $mode = 'value') {
@@ -94,12 +94,12 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
         }
         return false;
     }
-    
+
     public function getTableName()
     {
         return 'felamimail_cache_message';
     }
-    
+
     /**
     * get folder ids of all inboxes for accounts of current user
     *
@@ -125,7 +125,7 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
 
         return $return;
     }
-    
+
     protected function _getAllFoldersByAccountId($_accountId, $_globalname = '', $_parent = '')
     {
         $return = array();
@@ -133,7 +133,7 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
         {
             $_parent = self::IMAPDELIMITER.$_accountId;
         }
-        
+
         $folderBackend = Felamimail_Backend_Folder::getInstance();
         $folderFilter = new Felamimail_Model_FolderFilter(array(
             array('field' => 'account_id', 'operator' => 'in', 'value' => $_accountId),
@@ -142,27 +142,27 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
         ));
         $folderBackend = Felamimail_Backend_Folder::getInstance();
         $folderIds = $folderBackend->search($folderFilter, NULL, TRUE);
-        
+
         $return = array();
         for ($it = $folderIds->getIterator(), $it->rewind(); $it->valid(); $it->next())
         {
             $folder = $it->current();
             if ($folder->has_children)
-            {   
-                $return = array_merge($this->_getAllFoldersByAccountId($folder->account_id, 
-                    $folder->globalname, $_parent.self::IMAPDELIMITER. $folder->id), $return);                
+            {
+                $return = array_merge($this->_getAllFoldersByAccountId($folder->account_id,
+                    $folder->globalname, $_parent.self::IMAPDELIMITER. $folder->id), $return);
             }
-            
+
             // TODO: verify if this test isn't too specific for Cyrus Imapd.
             if ($folder->is_selectable)
             {
                 $return = array_merge(array($_parent.self::IMAPDELIMITER.$folder->id), $return);
             }
         }
-        
+
         return $return;
     }
-    
+
     protected function _getAllFolders()
     {
         $return = array();
@@ -172,15 +172,15 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
         {
             $return = array_merge($return, $folderBackend->getAllFolderIdsFromAccount($account));
         }
-        
+
         return $return;
-        
+
     }
-    
+
     /**
      *
      * @param type $paths
-     * @return type 
+     * @return type
      */
     protected function _getFoldersInfo($paths)
     {
@@ -188,28 +188,28 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
         foreach ($paths as $tmp)
         {
             $tmp = is_array($tmp) ? explode(self::IMAPDELIMITER, $tmp['path']) : explode(self::IMAPDELIMITER, $tmp);
-            
+
             if (empty($tmp[0]))
             {
                 array_shift($tmp);
             }
-            
+
             $userId = array_shift($tmp);
             $folderId = array_pop($tmp);
             $folder = Felamimail_Backend_Cache_Imap_Folder::decodeFolderUid($folderId);
-            
+
             $return[$folderId] = array($userId, $folder['globalName']);
         }
-        
+
         return $return;
     }
 
     /**
      * get all folders globalname and accountId
-     * 
+     *
      * @param array $_pathFilters
      * @return array
-     * 
+     *
      * @todo implement not in
      * @todo what happens when path is empty???? is the same as /allinboxes???
      */
@@ -230,26 +230,26 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
             {
                 $pathFilter['value'] = array_diff($this->_getAllFolders(), $pathFilter['value']);
             }
-            
+
             $paths = array_merge($paths,  $pathFilter['value']);
         }
-        
+
         return $this->_getFoldersInfo($paths);
     }
-    
+
     /**
      * Generate all the necessary imap filters to be processed by the search method
-     * 
+     *
      * @param mixed $_filter
-     * @param Tinebase_Model_Pagination $_pagination 
-     * 
+     * @param Tinebase_Model_Pagination $_pagination
+     *
      * @todo implement filters: flags, account_id, id, received, messageuid
      * @todo verify results with empty value
      */
     protected function _generateImapSearch($_filter, Tinebase_Model_Pagination $_pagination = NULL)
     {
         $return = array();
-        
+
         if (!is_array($_filter))
         {
             $filters = array();
@@ -259,7 +259,7 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
         {
             $filters = $_filter;
         }
-        
+
         foreach ($filters as $filter)
         {
             if (!is_a($filter, Tinebase_Model_Filter_Abstract))
@@ -274,7 +274,7 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
                 $field = $filter->getField();
                 $operator = $filter->getOperator();
             }
-            
+
 //            if (!empty($value))
 //            {
                 switch ($field)
@@ -342,7 +342,7 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
                             }
                         };
                         $value = array_map($func, (array)$value);
-                        
+
                         switch ($operator)
                         {
                             case 'in' :
@@ -357,19 +357,19 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
 //            }
         }
         return $return;
-        
+
 //        $filters = $_filterArray['filters'];
 //        Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message Search = $_pagination' . print_r($_pagination,true));
-        
+
     }
-    
+
     /**
      * Get filter model and pagination model and parse the rules
-     * 
+     *
      * @param Tinebase_Model_Filter_FilterGroup $_filter
      * @param Tinebase_Model_Pagination $_pagination
      * @return string
-     * 
+     *
      * @todo exclude $_pagination from this method
      */
     protected function _parseFilterGroup(Tinebase_Model_Filter_FilterGroup $_filter = NULL,
@@ -378,15 +378,15 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
         $return = array();
         $return['filters'] = array();
         $return['paths'] = array();
-        
-        $return['paths'] = array_merge($return['paths'], 
+
+        $return['paths'] = array_merge($return['paths'],
             (array)$this->_processPathFilters($_filter->getFilter('path', true)));
         foreach (array('to', 'cc', 'bcc', 'flags') as $field)
         {
-            $return['filters'] = array_merge($return['filters'], 
+            $return['filters'] = array_merge($return['filters'],
                 (array)$this->_generateImapSearch($_filter->getFilter($field, true), $_pagination));
         }
-        
+
         foreach ($_filter->getFilterObjects() as $filter)
         {
             if ($filter instanceof Tinebase_Model_Filter_FilterGroup)
@@ -399,7 +399,7 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
                 {
                     $apaths = $this->_getAllFolders();
                     $id = $filter->getvalue();
-                    
+
                     if(array_key_exists($id, $apaths))
                     {
                         $return['paths'] = array($id => $apaths[$id]);
@@ -407,24 +407,24 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
                 }
                 else
                 {
-                    $return['filters'] = 'Id'; 
-                }                
+                    $return['filters'] = 'Id';
+                }
             }
             else if ($filter instanceof Tinebase_Model_Filter_Abstract)
             {
-                $return['filters'] = array_merge($return['filters'], 
+                $return['filters'] = array_merge($return['filters'],
                         (array)$this->_generateImapSearch($filter, $_pagination));
             }
 
         }
-        
+
         return $return;
     }
-    
+
     /**
      * Create a messageId
      * @param string $_messageId
-     * @return string 
+     * @return string
      */
     static public function createMessageId($_accountId, $_folderId, $_messageUid)
     {
@@ -432,7 +432,7 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
         $count = substr_count($messageId, '=');
         return substr($messageId,0, (strlen($messageId) - $count)) . $count;
     }
-    
+
     /**
      * Decode the messageId
      * @param string $_messageId
@@ -442,24 +442,24 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
     {
         $decoded = base64_decode(str_pad(substr($_messageId, 0, -1), substr($_messageId, -1), '='));
         list($accountId, $folderId, $messageUid) = explode(';', $decoded);
-        
+
         return array(
             'accountId'     => $accountId,
             'folderId'      => $folderId,
             'messageUid'    => $messageUid,
         );
     }
-    
+
     /**
      * create new message for the cache
-     * 
+     *
      * @param array $_message
      * @param Felamimail_Model_Folder $_folder
      * @return Felamimail_Model_Message
      */
     protected function _createModelMessage(array $_message, Felamimail_Model_Folder $_folder = NULL)
     {
-        
+
         // Optimization!!!
         if ($_folder == NULL)
         {
@@ -474,9 +474,9 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
             {
                 return NULL;
             }
-            
+
         }
-        
+
         $message = new Felamimail_Model_Message(array(
             'id'            => self::createMessageId($_folder->account_id, $_folder->getId(), $_message['uid']),
             'account_id'    => $_folder->account_id,
@@ -496,30 +496,30 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
 
         $attachments = Felamimail_Controller_Message::getInstance()->getAttachments($message);
         $message->has_attachment = (count($attachments) > 0) ? true : false;
-        
+
         return $message;
     }
-    
+
     /**
      * create new message for the cache
-     * 
+     *
      * @param array $_message
      * @param Felamimail_Model_Folder $_folder
      * @return Felamimail_Model_Message
      */
     protected function _createModelMessageArray(array $_messages, Felamimail_Model_Folder $_folder = NULL)
     {
-        
+
         $return = array();
         foreach ($_messages as $uid => $msg)
         {
             $message = $this->_createModelMessage($msg, $_folder);
             $return[$uid] = $message;
         }
-        
+
         return $return;
     }
-    
+
     protected function _getImapSortParams(Tinebase_Model_Pagination $_pagination = NULL)
     {
         if ($_pagination != NULL);
@@ -548,19 +548,19 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
                     break;
                 default :
                     $sort = array('REVERSE ARRIVAL');
-            }   
+            }
             return $sort;
         }
-            
+
         return array('REVERSE ARRIVAL');
     }
-    
+
     /**
      * Get Ids for filter
      * @param array $imapFilters
      * @param Tinebase_Model_Pagination $_pagination
      * @return array
-     * 
+     *
      * @todo pass the search parameters
      */
     protected function _getIds(array $_imapFilters, Tinebase_Model_Pagination $_pagination = NULL)
@@ -571,23 +571,23 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
             $_imapFilters['paths'] = $this->_getAllFolders();
         }
         $sort = $this->_getImapSortParams($_pagination);
-        
+
         // do a search for each path on $imapFilters
         foreach ($_imapFilters['paths'] as $folderId => $path)
         {
             list($accountId, $mailbox) = $path;
-            
+
             $imap = Felamimail_Backend_ImapFactory::factory($accountId);
             $imap->selectFolder(Felamimail_Model_Folder::encodeFolderName($mailbox));
 
             // TODO: pass the search parameter too.
             $messages[$folderId] = $imap->sort((array)$sort, (array)$_imapFilters['filters']);
-            
+
         }
-        
+
         return $messages;
     }
-    
+
     protected function _doPagination($_messages, $_pagination)
     {
         $isRecordSet = false;
@@ -595,18 +595,18 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
         if ($_messages instanceof Tinebase_Record_RecordSet)
         {
             $isRecordSet = true;
-            $totalCount = $_messages->getgetSearchTotalCount();
+            $totalCount = $_messages->getSearchTotalCount();
             $_messages = $_messages->toArray();
         }
         else
         {
             $_messages = (Array) $_messages;
         }
-        
+
         $limit = empty($_pagination->limit) ? count($_messages) : $_pagination->limit;
         $_messages = array_chunk($_messages, $limit, true);
         $chunkIndex = empty($_pagination->start) ? 0 : $_pagination->start/$limit;
-        
+
         if (empty($_messages) || count($_messages) <= $chunkIndex)
         {
             return array();
@@ -633,13 +633,13 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
      * @todo implement optimizations on flags and security sorting
      * @todo implement messageuid,account_id search
      */
-    public function search(Tinebase_Model_Filter_FilterGroup $_filter = NULL, Tinebase_Model_Pagination $_pagination = NULL, $_cols = '*')    
+    public function search(Tinebase_Model_Filter_FilterGroup $_filter = NULL, Tinebase_Model_Pagination $_pagination = NULL, $_cols = '*')
     {
         $return = null;
         $messages = array();
         $filterObjects = $_filter->getFilterObjects();
         $imapFilters = $this->_parseFilterGroup($_filter, $_pagination);
-        $pagination = !$_pagination ? new Tinebase_Model_Pagination(NULL, TRUE) : $_pagination;       
+        $pagination = !$_pagination ? new Tinebase_Model_Pagination(NULL, TRUE) : $_pagination;
 
          if($imapFilters['filters'] == 'Id'){
             $ids = $filterObjects[0]->getValue();
@@ -649,7 +649,7 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
             else
                 return empty($ids) ? $this->_rawDataToRecordSet(array()) : $this->getMultiple($ids);
         }else{
-            
+
             $maxresults = Tinebase_Config::getInstance()->getConfig('IMAPAdapterMaxSearchResults', null,
                     Felamimail_Backend_Cache_Imap_Message::MAXSEARCHRESULTS);
 
@@ -657,22 +657,22 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
             {
                 $imapFilters['paths'] = $this->_getAllFolders();
             }
-            
+
             // get Summarys and merge results
             foreach ($imapFilters['paths'] as $folderId =>  $folderData)
             {
                 list($accountId, $globalname) = $folderData;
-                
+
                 $imap = Felamimail_Backend_ImapFactory::factory($accountId);
                 $imap->selectFolder(Felamimail_Model_Folder::encodeFolderName($globalname));
                 $sort = $this->_getImapSortParams($_pagination);
                 $idsInFolder = $imap->sort((array)$sort, (array)$imapFilters['filters']);
-                
+
                 if ($imapFilters['paths'] !== 1 && count($messages) > $maxresults->value) // when searching more than one folder, break on 1000 records
                 {
                     throw new Felamimail_Exception_IMAPCacheTooMuchResults();
                 }
-                
+
                 if($imapFilters['paths'] === 1 && count($_cols) == 2 && $_cols[0] == '_id_' && $_cols[1] == 'messageuid')
                 {
                     $return = array();
@@ -684,10 +684,10 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
                     }
                     return $return;
                 }
-                
-                $idsInFolder = ($imapFilters['paths'] === 1) ? $this->_doPagination($idsInFolder, $_pagination) : $idsInFolder; // do pagination early
+
+                $idsInFolder = (count($imapFilters['paths']) === 1) ? $this->_doPagination($idsInFolder, $_pagination) : $idsInFolder; // do pagination early
                 $messagesInFolder = $imap->getSummary($idsInFolder, null, null, $folderId);
-                
+
                 if (count($imapFilters['paths']) === 1)
                 {
                     $tmp = array();
@@ -701,12 +701,12 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
                     unset($tmp);
                 }
                 unset($idsInFolder);
-                
+
                 $messages = array_merge($messages, $messagesInFolder);
                 unset($messagesInFolder);
-                
+
             }
-            
+
             if ((count($imapFilters['paths']) === 1 && !in_array($pagination->sort, $this->_imapSortParams)) ||
                     count($imapFilters['paths']) > 1) // do not sort
             {
@@ -720,13 +720,13 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
             return $this->_rawDataToRecordSet(array());
         }
         $searchTotalCount = count($messages);
-        
+
         // Apply Pagination and get the resulting summary
         $messages = count($imapFilters['paths']) === 1 ? $messages : $this->_doPagination($messages, $_pagination);
-        
+
         $return =  empty($messages) ? $this->_rawDataToRecordSet(array()) :
             $this->_rawDataToRecordSet($this->_createModelMessageArray($messages), $searchTotalCount);
-             
+
         return $return;
     }
 
@@ -739,16 +739,16 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
      */
     public function update(Tinebase_Record_Interface $_record)
     {
-/*        
+/*
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message update = $_record ' . print_r($_record,true));
-*/ 
-//        $aux = new Felamimail_Backend_Cache_Sql_Message();        
+*/
+//        $aux = new Felamimail_Backend_Cache_Sql_Message();
 //        $retorno = $aux->update($_record);
-        
+
 //Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . 'Message update = $retorno ' . print_r($retorno,true));
-        return NULL;        
+        return NULL;
     }
-    
+
         /**
      * Updates multiple entries
      *
@@ -757,34 +757,34 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
      * @return integer number of affected rows
      * @throws Tinebase_Exception_Record_Validation|Tinebase_Exception_InvalidArgument
      */
-    public function updateMultiple($_ids, $_data) 
-    {   
+    public function updateMultiple($_ids, $_data)
+    {
         return Null;
     }
-    
-    
+
+
     /**
      * Gets total count of search with $_filter
-     * 
+     *
      * @param Tinebase_Model_Filter_FilterGroup $_filter
      * @return int
      */
     public function searchCount(Tinebase_Model_Filter_FilterGroup $_filter)
     {
-        
+
         $result = $this->_getIds($this->_parseFilterGroup($_filter));
-        
+
         $ids = array();
         foreach ($result as $tmp)
         {
             $ids = array_merge($ids, $tmp);
         }
-        
+
         $return = count($ids);
 //Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . 'Message searchCount = $retorno ' . print_r($retorno,true));
         return $return;
     }
-    
+
     /**
      * Gets one entry (by id)
      *
@@ -793,44 +793,44 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
      * @return Tinebase_Record_Interface
      * @throws Tinebase_Exception_NotFound
      */
-    public function get($_id, $_getDeleted = FALSE) 
+    public function get($_id, $_getDeleted = FALSE)
     {
-/*        
+/*
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message get = $_id ' . print_r($_id,true));
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message get = $_getDeleted' . print_r($_getDeleted,true));
-*/ 
+*/
         $decodedIds = self::decodeMessageId($_id);
-        
+
         $uid = $decodedIds['messageUid'];
         $folder = Felamimail_Controller_Folder::getInstance()->get($decodedIds['folderId']);
         $globalname = Felamimail_Backend_Cache_Imap_Folder::decodeFolderUid($decodedIds['folderId']);
         $accountId = $decodedIds['accountId'];
-        
+
         $imap = Felamimail_Backend_ImapFactory::factory($accountId);
         $imap->selectFolder($globalname['globalName']);
-        
+
         // we're getting just one message
         $messages = $imap->getSummary($uid, $uid, TRUE, $folder->getId()); // $folder->getId() = ugly hack, have to try to find another solution
-        
+
         if (count($messages) === 0)
         {
             throw new Tinebase_Exception_NotFound("Message number $uid not found!");
         }
-        
+
         $message = array_shift($messages);
         $retorno = $this->_createModelMessage($message, $folder);
 
         return $retorno;
     }
-    
+
      /**
       * Deletes entries
-      * 
+      *
       * @param string|integer|Tinebase_Record_Interface|array $_id
       * @return void
       * @return int The number of affected rows.
       */
-    public function delete($_id) 
+    public function delete($_id)
     {
         $_id = ($_id instanceof Felamimail_Model_Message) ? array($_id->getId()) : $_id;
         if(is_array($_id)){
@@ -843,38 +843,38 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
                 $return = count($_id);
             }
         }
-            
-        return $return; 
+
+        return $return;
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     /**
      * Get multiple entries
      *
      * @param string|array $_id Ids
      * @param array $_containerIds all allowed container ids that are added to getMultiple query
      * @return Tinebase_Record_RecordSet
-     * 
+     *
      * @todo get custom fields here as well
      */
-    public function getMultiple($_id, $_containerIds = NULL) 
+    public function getMultiple($_id, $_containerIds = NULL)
     {
-/*        
+/*
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message getMultiple = $_id ' . print_r($_id,true));
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message getMultiple = $_containerIds ' . print_r($_containerIds,true));
-*/ 
-//       $aux = new Felamimail_Backend_Cache_Sql_Message();        
+*/
+//       $aux = new Felamimail_Backend_Cache_Sql_Message();
 //        $retorno = $aux->getMultiple($_id, $_containerIds = NULL);
-        
+
 //Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . 'Message delete = $retorno ' . print_r($retorno,true));
-       if($_id instanceof Tinebase_Record_RecordSet) 
+       if($_id instanceof Tinebase_Record_RecordSet)
            return $_id;
-       
+
        $messages = Array();
-        
+
         if(is_array($_id)){
             foreach($_id as $id){
                $messages[] = $this->get($id);
@@ -882,10 +882,10 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
         }else{
             $messages[] = $this->get($_id);
         }
-        
-        $retorno = new Tinebase_Record_SearchTotalCountRecordSet('Felamimail_Model_Message', $messages, true); 
+
+        $retorno = new Tinebase_Record_SearchTotalCountRecordSet('Felamimail_Model_Message', $messages, true);
         $retorno->setSearchTotalCount(count($messages));
-        
+
         return $retorno;
     }
 
@@ -896,22 +896,22 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
      * @return  Tinebase_Record_Interface
      * @throws  Tinebase_Exception_InvalidArgument
      * @throws  Tinebase_Exception_UnexpectedValue
-     * 
+     *
      * @todo    remove autoincremental ids later
      */
     public function create(Tinebase_Record_Interface $_record)
     {
-/*        
+/*
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message create = $_record ' . print_r($_record,true));
-*/ 
-//        $aux = new Felamimail_Backend_Cache_Sql_Message();        
+*/
+//        $aux = new Felamimail_Backend_Cache_Sql_Message();
 //        $retorno = $aux->create($_record);
-        
+
 //Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . 'Message create = $retorno ' . print_r($retorno,true));
         return NULL;
     }
-    
-    
+
+
     /*************************** interface functions ****************************/
     /**
      * Search for records matching given filter
@@ -920,11 +920,11 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
      * @param  Tinebase_Model_Pagination            $_pagination
      * @return array
      */
-    public function searchMessageUids(Tinebase_Model_Filter_FilterGroup $_filter = NULL, Tinebase_Model_Pagination $_pagination = NULL)    
+    public function searchMessageUids(Tinebase_Model_Filter_FilterGroup $_filter = NULL, Tinebase_Model_Pagination $_pagination = NULL)
     {
         return $this->search($_filter, $_pagination, array(Tinebase_Backend_Sql_Abstract::IDCOL, 'messageuid'));
     }
-    
+
     /**
      * get all flags for a given folder id
      *
@@ -933,17 +933,17 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
      * @param integer $_limit
      * @return Tinebase_Record_RecordSet
      */
-    public function getFlagsForFolder($_folderId, $_start = NULL, $_limit = NULL)    
+    public function getFlagsForFolder($_folderId, $_start = NULL, $_limit = NULL)
     {
         $filter = $this->_getMessageFilterWithFolderId($_folderId);
         $pagination = ($_start !== NULL || $_limit !== NULL) ? new Tinebase_Model_Pagination(array(
             'start' => $_start,
             'limit' => $_limit,
         ), TRUE) : NULL;
-        
+
         return $this->search($filter, $pagination, array('messageuid' => 'messageuid', 'id' => Tinebase_Backend_Sql_Abstract::IDCOL, 'flags' => 'felamimail_cache_message_flag.flag'));
     }
-    
+
     /**
      * add flag to message
      *
@@ -952,15 +952,15 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
      */
     public function addFlag($_message, $_flag)
     {
-/*        
+/*
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message addFlag = $_message ' . print_r($_message,true));
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message addFlag = $_flag ' . print_r($_flag,true));
-*/ 
-//        $aux = new Felamimail_Backend_Cache_Sql_Message();        
+*/
+//        $aux = new Felamimail_Backend_Cache_Sql_Message();
 //        $aux->addFlag($_message, $_flag);
         return NULL;
     }
-    
+
     /**
      * set flags of message
      *
@@ -969,15 +969,15 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
      */
     public function setFlags($_messages, $_flags, $_folderId = NULL)
     {
-/*        
+/*
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message setFlags = $_message ' . print_r($_message,true));
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message setFlags = $_flags ' . print_r($_flags,true));
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message setFlags = $_folderId ' . print_r($_folderId,true));
-*/ 
-//        $aux = new Felamimail_Backend_Cache_Sql_Message();        
+*/
+//        $aux = new Felamimail_Backend_Cache_Sql_Message();
 //        $aux->setFlags($_messages, $_flags, $_folderId);
     }
-    
+
     /**
      * remove flag from messages
      *
@@ -986,14 +986,14 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
      */
     public function clearFlag($_messages, $_flag)
     {
-/*        
+/*
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message clearFlag = $_message ' . print_r($_message,true));
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message clearFlag = $_flag ' . print_r($_flag,true));
-*/ 
-//        $aux = new Felamimail_Backend_Cache_Sql_Message();        
+*/
+//        $aux = new Felamimail_Backend_Cache_Sql_Message();
 //        $aux->clearFlag($_messages, $_flag);
     }
-    
+
     /**
      * Does nothing in this backend. It's necessary for the interface though.
      *
@@ -1002,49 +1002,49 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
     public function deleteByFolderId($_folderId)
     {
         /**
-         *TODO: remove the rest of the function  
+         *TODO: remove the rest of the function
          */
-//        $aux = new Felamimail_Backend_Cache_Sql_Message();        
+//        $aux = new Felamimail_Backend_Cache_Sql_Message();
 //        $aux->deleteByFolderId($_folderId);
     }
 
     /**
-     * get count of cached messages by folder (id) 
+     * get count of cached messages by folder (id)
      *
      * @param  mixed  $_folderId
      * @return integer
      */
     public function searchCountByFolderId($_folderId)
     {
-/*        
+/*
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message searchCountByFolderId = $_folderId ' . print_r($_folderId,true));
-*/ 
-//        $aux = new Felamimail_Backend_Cache_Sql_Message();        
+*/
+//        $aux = new Felamimail_Backend_Cache_Sql_Message();
 //        $retorno = $aux->searchCountByFolderId($_folderId);
-        
+
 //Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . 'Message searchCountByFolderId = $retorno ' . print_r($retorno,true));
-        return NULL;      
+        return NULL;
     }
-    
+
     /**
-     * get count of seen cached messages by folder (id) 
+     * get count of seen cached messages by folder (id)
      *
      * @param  mixed  $_folderId
      * @return integer
-     * 
+     *
      */
     public function seenCountByFolderId($_folderId)
     {
-/*        
+/*
 Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Message seenCountByFolderId = $_folderId ' . print_r($_folderId,true));
-*/ 
-//        $aux = new Felamimail_Backend_Cache_Sql_Message();        
+*/
+//        $aux = new Felamimail_Backend_Cache_Sql_Message();
 //        $retorno = $aux->seenCountByFolderId($_folderId);
-        
+
 //Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . 'Message seenCountByFolderId = $retorno ' . print_r($retorno,true));
-        return NULL;            
+        return NULL;
     }
-    
+
     /**
      * delete messages with given messageuids by folder (id)
      *
@@ -1054,10 +1054,10 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
      */
     public function deleteMessageuidsByFolderId($_msguids, $_folderId)
     {
-        $return = FALSE;        
+        $return = FALSE;
         if (!(empty($_msguids) || !is_array($_msguids)))
         {
-            Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' Logicaly delete the messages ' 
+            Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' Logicaly delete the messages '
                                                                                             . print_r($_msguids, true));
             $return = count($_msguids);
         }
@@ -1065,11 +1065,11 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
         /**
          * TODO: remove the code below and uncomment the code above
          */
-        $aux = new Felamimail_Backend_Cache_Sql_Message();        
+        $aux = new Felamimail_Backend_Cache_Sql_Message();
         $retorno = $aux->deleteMessageuidsByFolderId($_msguids, $_folderId);
         return $retorno;
     }
-    
+
 /********************************************** protected functions ***************************************************/
 
     /**
@@ -1083,12 +1083,12 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
         if (isset($_rawData['structure'])) {
             $_rawData['structure'] = Zend_Json::decode($_rawData['structure']);
         }
-        
+
         $result = parent::_rawDataToRecord($_rawData);
-                
+
         return $result;
     }
-    
+
     /**
      * converts record into raw data for adapter
      *
@@ -1098,17 +1098,17 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
     protected function _recordToRawData($_record)
     {
         $result = parent::_recordToRawData($_record);
-        
+
         if(isset($result['structure'])) {
             $result['structure'] = Zend_Json::encode($result['structure']);
         }
-        
+
         return $result;
-    }  
-    
+    }
+
     /**
      * get folder id message filter
-     * 
+     *
      * @param mixed $_folderId
      * @return Felamimail_Model_MessageFilter
      */
@@ -1118,7 +1118,7 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
         $filter = new Felamimail_Model_MessageFilter(array(
             array('field' => 'folder_id', 'operator' => 'equals', 'value' => $folderId)
         ));
-        
+
         return $filter;
     }
 }
