@@ -788,7 +788,7 @@ abstract class Felamimail_Controller_Message_Abstract extends Tinebase_Controlle
      */
     protected function _getDecodedBodyImages($_messageId, $_content)
     {
-        $found = preg_match_all('/<img.[^>]*src=[\"|\']cid:(.[^>\"\']*).[^>]*>/',$_content,$matches,PREG_SET_ORDER);
+        $found = preg_match_all('/<img.[^>]*src=[\"|\']?cid:(.[^>\"\'\s]*).[^>]*>/',$_content,$matches,PREG_SET_ORDER);
         if ($found) {
             Tinebase_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Replacing cids from multipart messages with images');
             foreach ($matches as $match) {
