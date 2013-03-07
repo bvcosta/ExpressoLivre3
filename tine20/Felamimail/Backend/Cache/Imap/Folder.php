@@ -22,7 +22,7 @@ class Felamimail_Backend_Cache_Imap_Folder extends Felamimail_Backend_Cache_Imap
 
      /**
      * the constructor
-     *
+     * Caches a Felamimail_Account object for latter use. 
      * @return void
      */
 
