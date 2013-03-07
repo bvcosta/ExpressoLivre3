@@ -15,6 +15,22 @@
 class Felamimail_Backend_Cache_Imap_Folder extends Felamimail_Backend_Cache_Imap_Abstract
                                            implements Felamimail_Backend_Cache_FolderInterface
 {
+
+
+     private $_accounts = null;
+
+
+     /**
+     * the constructor
+     *
+     * @return void
+     */
+
+    public function __construct()
+    {
+          $this->_accounts = Felamimail_Controller_Account::getInstance()->search();
+    }
+		
     /*************************** abstract functions ****************************/
     /**
      * Search for records matching given filter
@@ -47,7 +63,7 @@ class Felamimail_Backend_Cache_Imap_Folder extends Felamimail_Backend_Cache_Imap
                     $parent = true;
                     break;
                 case 'id':
-                    $felamimailAccount = Felamimail_Controller_Account::getInstance()->search()->toArray();
+                    $felamimailAccount = $this->_accounts->toArray();
                     $accountId = $felamimailAccount[0]['id'];
                     $globalName = $filter->getValue();
                     $parent = true;
@@ -67,7 +83,7 @@ class Felamimail_Backend_Cache_Imap_Folder extends Felamimail_Backend_Cache_Imap
         
         foreach ($accountId as $id)
         {
-            $account = Felamimail_Controller_Account::getInstance()->get($id);
+            $account = $this->_accounts->getById($id);
             
             if($parent === true){
                 $folders = $this->_getFoldersFromIMAP($account, $globalName);
@@ -303,7 +319,7 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Fol
             try {
                 $imap = Felamimail_Backend_ImapFactory::factory($folderDecoded['accountId']);
                 $folder = $imap->getFolders('',$folderDecoded['globalName'],
-                    Felamimail_Controller_Account::getInstance()->get($folderDecoded['accountId']));
+                    $this->_accounts->getById($folderDecoded['accountId']));
                 $counter = $imap->examineFolder($folderDecoded['globalName']);
                 $status = $imap->getFolderStatus($folderDecoded['globalName']);
                 $quota = $imap->getQuota($folderDecoded['globalName']);
