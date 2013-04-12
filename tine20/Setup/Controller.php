@@ -32,41 +32,43 @@ class Setup_Controller
      * @var Setup_Controller
      */
     private static $_instance = NULL;
-    
+
     /**
      * setup backend
      *
      * @var Setup_Backend_Interface
      */
     protected $_backend = NULL;
-    
+
     /**
      * the directory where applications are located
      *
      * @var string
      */
     protected $_baseDir;
-    
+
     /**
      * the email configs to get/set
      *
      * @var array
      */
     protected $_emailConfigKeys = array();
-    
+
     /**
      * number of updated apps
-     * 
+     *
      * @var integer
      */
     protected $_updatedApplications = 0;
-    
+
+    protected $_metadataTablePath = '/var/www/tine20/data/metadata/table';
+
     /**
      * don't clone. Use the singleton.
      *
      */
     private function __clone() {}
-    
+
     /**
      * url to Tine 2.0 wiki
      *
@@ -84,7 +86,7 @@ class Setup_Controller
         if (self::$_instance === NULL) {
             self::$_instance = new Setup_Controller;
         }
-        
+
         return self::$_instance;
     }
 
@@ -96,20 +98,20 @@ class Setup_Controller
     {
         // setup actions could take quite a while we try to set max execution time to unlimited
         Setup_Core::setExecutionLifeTime(0);
-        
+
         if (!defined('MAXLOOPCOUNT')) {
             define('MAXLOOPCOUNT', 50);
         }
-        
+
         $this->_baseDir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR;
-        
+
         if (Setup_Core::get(Setup_Core::CHECKDB)) {
             $this->_db = Setup_Core::getDb();
             $this->_backend = Setup_Backend_Factory::factory();
         } else {
             $this->_db = NULL;
         }
-        
+
         $this->_emailConfigKeys = array(
             'imap'  => Tinebase_Config::IMAP,
             'smtp'  => Tinebase_Config::SMTP,
@@ -127,9 +129,9 @@ class Setup_Controller
     public function checkRequirements()
     {
         $envCheck = $this->environmentCheck();
-        
+
         $databaseCheck = $this->checkDatabase();
-        
+
         $extCheck = new Setup_ExtCheck(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'essentials.xml');
         $extResult = $extCheck->getData();
 
@@ -139,10 +141,101 @@ class Setup_Controller
         );
 
         $result['totalcount'] = count($result['results']);
-        
+
         return $result;
     }
-    
+
+
+      /**
+     * Saves table metadata into a PHP file
+     * @param unknown_type $tableXML
+     */
+    public function saveTableMetadata($tableXML)
+    {
+    	$tableName = $tableXML->name;
+    	$fileName = $tableName . '.php';
+
+    	$filePath = $this->_metadataTablePath . "/$fileName";
+
+    	Setup_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' file name: ' . $fileName);
+    	Setup_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' file path: ' . $filePath);
+
+    	$header = "<?php return array(\n";
+
+    	$metadata = '';
+
+    	$primaryKey = '';
+    	$indexes = $tableName->xpath('/application/tables/table[name="' . $tableName . '"]/declaration/index');
+
+    	foreach($indexes as $index)
+    	{
+    		if (isset($index->primary) && $index->primary == 'true')
+    		{
+    			$primaryKey = trim($index->field->name);
+    			break;
+    		}
+    	}
+
+    	$fields = $tableName->xpath('/application/tables/table[name="' . $tableName . '"]/declaration/field');
+
+	   	foreach($fields as $position => $field)
+    	{
+    		$fieldName = trim($field->name);
+    		$type = isset($field->type) ? $field->type : 'null';
+
+    		$default = isset($field->default) ? $field->default : 'null';
+    		$default = ($type == 'integer' || $type == 'float') ? 0 : "'$default'";
+
+    		$nullable = (boolean) (isset($field->notnull)) ? !$field->notnull : true;
+    		$nullable = ($nullable ? 'true' : 'false');
+
+    		$length = isset($field->length) ? $field->length : 'null';
+    		$unsigned = isset($field->unsigned) ? $field->unsigned : 'null';
+
+    		$primary = (($fieldName == $primaryKey) ? 'true' : 'false');
+    		$primaryPosition = ($primary == 'true') ? 1 : 'null'; // there's not compound primary key
+
+    		Setup_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . " primary Key: $primaryKey fieldName: $fieldName primary: $primary");
+
+                $metadata .= "
+                                '$fieldName' => array(
+                                                'SCHEMA_NAME'      => null,
+                                                'TABLE_NAME'       => '$tableName',
+                                                'COLUMN_NAME'      => '$fieldName',
+                                                'COLUMN_POSITION'  => $position,
+                                                'DATA_TYPE'        => '$type',
+                                                'DEFAULT'          => $default,
+                                                'NULLABLE'         => $nullable,
+                                                'LENGTH'           => $length,
+                                                'SCALE'            => null, // @todo
+                                                'PRECISION'        => null, // @todo
+                                                'UNSIGNED'         => $unsigned,
+                                                'PRIMARY'          => $primary,
+                                                'PRIMARY_POSITION' => $primaryPosition, // @todo
+                                                'IDENTITY'         => null  // @todo
+                                ),
+                ";
+			$metadata .= "\n";
+    	}
+
+    	$metadata = $header . $metadata . ');';
+
+		try
+		{
+	    	if (file_exists($filePath))	unlink($filePath);
+
+	    	$handle = fopen($filePath, 'w');
+			if (!$handle) throw new Exception("Can't open $filePath");
+		    	fclose($handle);
+
+	    	if (!file_put_contents($filePath, $metadata)) throw new Exception("Can't write $filePath");
+		}
+		catch(Exception $e)
+		{
+	    	Setup_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' error writing table metadata: ' . $e->getMessage());
+		}
+ 	}
+
     /**
      * check which database extensions are available
      *
@@ -154,54 +247,54 @@ class Setup_Controller
             'result'  => array(),
             'success' => false
         );
-        
+
         $loadedExtensions = get_loaded_extensions();
-        
+
         if (! in_array('PDO', $loadedExtensions)) {
             $result['result'][] = array(
                 'key'       => 'Database',
                 'value'     => FALSE,
                 'message'   => "PDO extension not found."  . $this->_helperLink
             );
-            
+
             return $result;
         }
-        
+
         // check mysql requirements
         $missingMysqlExtensions = array_diff(array('mysql', 'pdo_mysql'), $loadedExtensions);
-        
+
         // check pgsql requirements
         $missingPgsqlExtensions = array_diff(array('pgsql', 'pdo_pgsql'), $loadedExtensions);
-        
+
         // check oracle requirements
         $missingOracleExtensions = array_diff(array('oci8'), $loadedExtensions);
-        
+
         if (! empty($missingMysqlExtensions) && ! empty($missingPgsqlExtensions) && ! empty($missingOracleExtensions)) {
             $result['result'][] = array(
                 'key'       => 'Database',
                 'value'     => FALSE,
-                'message'   => 'Database extensions missing. For MySQL install: ' . implode(', ', $missingMysqlExtensions) . 
-                               ' For Oracle install: ' . implode(', ', $missingOracleExtensions) . 
-                               ' For PostgreSQL install: ' . implode(', ', $missingPgsqlExtensions) . 
+                'message'   => 'Database extensions missing. For MySQL install: ' . implode(', ', $missingMysqlExtensions) .
+                               ' For Oracle install: ' . implode(', ', $missingOracleExtensions) .
+                               ' For PostgreSQL install: ' . implode(', ', $missingPgsqlExtensions) .
                                $this->_helperLink
             );
-            
+
             return $result;
         }
-        
+
         $result['result'][] = array(
             'key'       => 'Database',
             'value'     => TRUE,
-            'message'   => 'Support for following databases enabled: ' . 
-                           (empty($missingMysqlExtensions) ? 'MySQL' : '') . ' ' . 
-                           (empty($missingOracleExtensions) ? 'Oracle' : '') . ' ' . 
-                           (empty($missingPgsqlExtensions) ? 'PostgreSQL' : '') . ' ' 
+            'message'   => 'Support for following databases enabled: ' .
+                           (empty($missingMysqlExtensions) ? 'MySQL' : '') . ' ' .
+                           (empty($missingOracleExtensions) ? 'Oracle' : '') . ' ' .
+                           (empty($missingPgsqlExtensions) ? 'PostgreSQL' : '') . ' '
         );
         $result['success'] = TRUE;
-        
+
         return $result;
     }
-    
+
     /**
      * Check if logger is propperly configured (or not configured at all)
      *
@@ -222,7 +315,7 @@ class Setup_Controller
             );
         }
     }
-    
+
     /**
      * Check if caching is propperly configured (or not configured at all)
      *
@@ -237,7 +330,7 @@ class Setup_Controller
             return (isset($config->caching->path) && is_writable($config->caching->path));
         }
     }
-    
+
     /**
      * checks if path in config is writable
      *
@@ -251,7 +344,7 @@ class Setup_Controller
         if ($_group !== NULL && array_key_exists($_group, $config)) {
             $config = $config[$_group];
         }
-        
+
         $path = array_key_exists($_name, $config) ? $config[$_name] : false;
         if (empty($path)) {
             return true;
@@ -259,7 +352,7 @@ class Setup_Controller
             return @is_writable($path);
         }
     }
-    
+
     /**
      * get list of applications as found in the filesystem
      *
@@ -269,14 +362,14 @@ class Setup_Controller
     {
         // create Tinebase tables first
         $applications = array('Tinebase' => $this->getSetupXml('Tinebase'));
-        
+
         try {
             $dirIterator = new DirectoryIterator($this->_baseDir);
         } catch (Exception $e) {
             Setup_Core::getLogger()->warn(__METHOD__ . '::' . __LINE__ . ' Could not open base dir: ' . $this->_baseDir);
             throw new Tinebase_Exception_AccessDenied('Could not open Tine 2.0 root directory.');
         }
-        
+
         foreach ($dirIterator as $item) {
             $appName = $item->getFileName();
             if($appName{0} != '.' && $appName != 'Tinebase' && $item->isDir()) {
@@ -286,10 +379,10 @@ class Setup_Controller
                 }
             }
         }
-        
+
         return $applications;
     }
-    
+
     /**
      * updates installed applications. does nothing if no applications are installed
      *
@@ -301,7 +394,7 @@ class Setup_Controller
         $this->_updatedApplications = 0;
         $smallestMajorVersion = NULL;
         $biggestMajorVersion = NULL;
-        
+
         //find smallest major version
         foreach ($_applications as $application) {
             if ($smallestMajorVersion === NULL || $application->getMajorVersion() < $smallestMajorVersion) {
@@ -311,22 +404,22 @@ class Setup_Controller
                 $biggestMajorVersion = $application->getMajorVersion();
             }
         }
-        
+
         $messages = array();
-        
+
         // update tinebase first (to biggest major version)
         $tinebase = $_applications->filter('name', 'Tinebase')->getFirstRecord();
         if (! empty($tinebase)) {
             unset($_applications[$_applications->getIndexById($tinebase->getId())]);
-        
+
             list($major, $minor) = explode('.', $this->getSetupXml('Tinebase')->version[0]);
             Setup_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Updating Tinebase to version ' . $major . '.' . $minor);
-            
+
             for ($majorVersion = $tinebase->getMajorVersion(); $majorVersion <= $major; $majorVersion++) {
                 $messages += $this->updateApplication($tinebase, $majorVersion);
             }
         }
-            
+
         // update the rest
         for ($majorVersion = $smallestMajorVersion; $majorVersion <= $biggestMajorVersion; $majorVersion++) {
             foreach ($_applications as $application) {
@@ -335,13 +428,13 @@ class Setup_Controller
                 }
             }
         }
-        
+
         return array(
             'messages' => $messages,
             'updated'  => $this->_updatedApplications,
         );
-    }    
-        
+    }
+
     /**
      * load the setup.xml file and returns a simplexml object
      *
@@ -355,12 +448,12 @@ class Setup_Controller
         if (!file_exists($setupXML)) {
             throw new Setup_Exception_NotFound(ucfirst($_applicationName) . '/Setup/setup.xml not found. If application got renamed or deleted, re-run setup.php.');
         }
-        
+
         $xml = simplexml_load_file($setupXML);
 
         return $xml;
     }
-    
+
     /**
      * check update
      *
@@ -385,7 +478,7 @@ class Setup_Controller
             }
         }
     }
-    
+
     /**
      * update installed application
      *
@@ -398,18 +491,18 @@ class Setup_Controller
     {
         $setupXml = $this->getSetupXml($_application->name);
         $messages = array();
-        
+
         switch(version_compare($_application->version, $setupXml->version)) {
             case -1:
                 $message = "Executing updates for " . $_application->name . " (starting at " . $_application->version . ")";
-                
+
                 $messages[] = $message;
                 Setup_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' ' . $message);
 
                 list($fromMajorVersion, $fromMinorVersion) = explode('.', $_application->version);
-        
+
                 $minor = $fromMinorVersion;
-                
+
                 $className = ucfirst($_application->name) . '_Setup_Update_Release' . $_majorVersion;
                 if(! class_exists($className)) {
                     Setup_Core::getLogger()->info(__METHOD__ . '::' . __LINE__
@@ -417,61 +510,61 @@ class Setup_Controller
                     );
                 } else {
                     $update = new $className($this->_backend);
-                
+
                     $classMethods = get_class_methods($update);
-              
+
                     // we must do at least one update
                     do {
                         $functionName = 'update_' . $minor;
-                        
+
                         try {
                             $db = Setup_Core::getDb();
                             $transactionId = Tinebase_TransactionManager::getInstance()->startTransaction($db);
-                        
+
                             Setup_Core::getLogger()->info(__METHOD__ . '::' . __LINE__
                                 . ' Updating ' . $_application->name . ' - ' . $functionName
                             );
-                            
+
                             $update->$functionName();
-                        
+
                             Tinebase_TransactionManager::getInstance()->commitTransaction($transactionId);
-                
+
                         } catch (Exception $e) {
                             Tinebase_TransactionManager::getInstance()->rollBack();
                             Setup_Core::getLogger()->err(__METHOD__ . '::' . __LINE__ . ' ' . $e->getMessage());
                             Setup_Core::getLogger()->err(__METHOD__ . '::' . __LINE__ . ' ' . $e->getTraceAsString());
                             throw $e;
                         }
-                            
+
                         $minor++;
                     } while(array_search('update_' . $minor, $classMethods) !== false);
                 }
-                
+
                 $messages[] = "<strong> Updated " . $_application->name . " successfully to " .  $_majorVersion . '.' . $minor . "</strong>";
-                
+
                 // update app version
                 $updatedApp = Tinebase_Application::getInstance()->getApplicationById($_application->getId());
                 $_application->version = $updatedApp->version;
                 Setup_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Updated ' . $_application->name . " successfully to " .  $_application->version);
                 $this->_updatedApplications++;
-                
+
                 break;
-                
+
             case 0:
                 Setup_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' No update needed for ' . $_application->name);
                 break;
-                
+
             case 1:
                 throw new Setup_Exception('Current application version is higher than version from setup.xml: '
                     . $_application->version . ' > ' . $setupXml->version
                 );
                 break;
         }
-        
+
         Setup_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Clearing cache after update ...');
         $this->_enableCaching();
         Tinebase_Core::getCache()->clean(Zend_Cache::CLEANING_MODE_ALL);
-        
+
         return $messages;
     }
 
@@ -489,16 +582,16 @@ class Setup_Controller
             Tinebase_Application::getInstance()->setApplicationState(array($_application->getId()), Tinebase_Application::DISABLED);
             return false;
         }
-        
+
         $updateNeeded = version_compare($_application->version, $setupXml->version);
-        
+
         if($updateNeeded === -1) {
             return true;
         }
-        
+
         return false;
     }
-    
+
     /**
      * search for installed and installable applications
      *
@@ -508,26 +601,26 @@ class Setup_Controller
     {
         // get installable apps
         $installable = $this->getInstallableApplications();
-        
+
         // get installed apps
         if (Setup_Core::get(Setup_Core::CHECKDB)) {
             try {
                 $installed = Tinebase_Application::getInstance()->getApplications(NULL, 'id')->toArray();
-                
+
                 // merge to create result array
                 $applications = array();
                 foreach ($installed as $application) {
-                    
+
                     if (! array_key_exists($application['name'], $installable)) {
                         Tinebase_Core::getLogger()->warn(__METHOD__ . '::' . __LINE__ . ' App ' . $application['name'] . ' does not exist any more.');
                         continue;
                     }
-                    
+
                     $depends = (array) $installable[$application['name']]->depends;
                     if (isset($depends['application'])) {
                         $depends = implode(', ', (array) $depends['application']);
                     }
-                    
+
                     $application['current_version'] = (string) $installable[$application['name']]->version;
                     $application['install_status'] = (version_compare($application['version'], $application['current_version']) === -1) ? 'updateable' : 'uptodate';
                     $application['depends'] = $depends;
@@ -538,13 +631,13 @@ class Setup_Controller
                 // no tables exist
             }
         }
-        
+
         foreach ($installable as $name => $setupXML) {
             $depends = (array) $setupXML->depends;
             if (isset($depends['application'])) {
                 $depends = implode(', ', (array) $depends['application']);
             }
-            
+
             $applications[] = array(
                 'name'              => $name,
                 'current_version'   => (string) $setupXML->version,
@@ -552,7 +645,7 @@ class Setup_Controller
                 'depends'           => $depends,
             );
         }
-        
+
         return array(
             'results'       => $applications,
             'totalcount'    => count($applications)
@@ -567,7 +660,7 @@ class Setup_Controller
     public function setupRequired()
     {
         $result = FALSE;
-        
+
         // check if applications table exists / only if db available
         if (Setup_Core::isRegistered(Setup_Core::DB)) {
             try {
@@ -583,10 +676,10 @@ class Setup_Controller
                 $result = TRUE;
             }
         }
-        
+
         return $result;
     }
-    
+
     /**
      * do php.ini environment check
      *
@@ -597,9 +690,9 @@ class Setup_Controller
         $result = array();
         $message = array();
         $success = TRUE;
-        
-        
-        
+
+
+
         // check php environment
         $requiredIniSettings = array(
             'magic_quotes_sybase'  => 0,
@@ -609,14 +702,14 @@ class Setup_Controller
             'eaccelerator.enable' => 0,
             'memory_limit' => '48M'
         );
-        
+
         foreach ($requiredIniSettings as $variable => $newValue) {
             $oldValue = ini_get($variable);
-            
+
             if ($variable == 'memory_limit') {
                 $required = convertToBytes($newValue);
                 $set = convertToBytes($oldValue);
-                
+
                 if ( $set < $required) {
                     $result[] = array(
                         'key'       => $variable,
@@ -643,13 +736,13 @@ class Setup_Controller
                 );
             }
         }
-        
+
         return array(
             'result'        => $result,
             'success'       => $success,
         );
     }
-    
+
     /**
      * get config file default values
      *
@@ -658,7 +751,7 @@ class Setup_Controller
     public function getConfigDefaults()
     {
         $defaultPath = Setup_Core::guessTempDir();
-        
+
         $result = array(
             'database' => array(
                 'host'     => 'localhost',
@@ -685,7 +778,7 @@ class Setup_Controller
                 'liftime'   => 86400,
             ),
         );
-        
+
         return $result;
     }
 
@@ -697,7 +790,7 @@ class Setup_Controller
     public function getConfigData()
     {
         $configArray = Setup_Core::getConfig()->toArray();
-        
+
         #####################################
         # LEGACY/COMPATIBILITY:
         # (1) had to rename session.save_path key to sessiondir because otherwise the
@@ -716,10 +809,10 @@ class Setup_Controller
             }
         }
         #####################################
-        
+
         return $configArray;
     }
-    
+
     /**
      * save data to config file
      *
@@ -735,7 +828,7 @@ class Setup_Controller
         if (Setup_Core::configFileExists() && !Setup_Core::configFileWritable()) {
             throw new Setup_Exception('Config File is not writeable.');
         }
-            
+
         if (Setup_Core::configFileExists()) {
             $doLogin = FALSE;
             $filename = Setup_Core::getConfigFilePath();
@@ -743,19 +836,19 @@ class Setup_Controller
             $doLogin = TRUE;
             $filename = dirname(__FILE__) . '/../config.inc.php';
         }
-        
+
         $config = $this->writeConfigToFile($_data, $_merge, $filename);
-        
+
         Setup_Core::set(Setup_Core::CONFIG, $config);
-        
+
         Setup_Core::setupLogger();
-        
+
         if ($doLogin && isset($password)) {
             Tinebase_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Create session for setup user ' . $_data['setupuser']['username']);
             $this->login($_data['setupuser']['username'], $password);
         }
     }
-    
+
     /**
      * write config to a file
      *
@@ -774,7 +867,7 @@ class Setup_Controller
         } else {
             $config = new Zend_Config($_data);
         }
-        
+
         // write to file
         Tinebase_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Updating config.inc.php');
         $writer = new Zend_Config_Writer_Array(array(
@@ -782,10 +875,10 @@ class Setup_Controller
             'filename' => $_filename,
         ));
         $writer->write();
-        
+
         return $config;
     }
-    
+
     /**
      * load authentication data
      *
@@ -799,7 +892,7 @@ class Setup_Controller
             'redirectSettings'  => $this->_getRedirectSettings()
         );
     }
-    
+
     /**
      * Update authentication data
      *
@@ -833,34 +926,34 @@ class Setup_Controller
         if (Tinebase_Core::isLogLevel(Zend_Log::TRACE)) Tinebase_Core::getLogger()->trace(__METHOD__ . '::' . __LINE__ . ' ' . print_r($_authenticationData, TRUE));
 
         $this->_enableCaching();
-        
+
         if (isset($_authenticationData['authentication'])) {
             $this->_updateAuthenticationProvider($_authenticationData['authentication']);
         }
-        
+
         if (isset($_authenticationData['accounts'])) {
             $this->_updateAccountsStorage($_authenticationData['accounts']);
         }
-        
+
         if (isset($_authenticationData['redirectSettings'])) {
             $this->_updateRedirectSettings($_authenticationData['redirectSettings']);
         }
-        
+
         if (isset($_authenticationData['acceptedTermsVersion'])) {
             $this->saveAcceptedTerms($_authenticationData['acceptedTermsVersion']);
         }
     }
-    
+
     /**
      * enable caching to make sure cache gets cleaned if config options change
      */
     protected function _enableCaching()
     {
         if (Tinebase_Core::isLogLevel(Zend_Log::INFO)) Tinebase_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Activate caching backend if available ...');
-        
+
         Tinebase_Core::setupCache();
     }
-    
+
     /**
      * Update authentication provider
      *
@@ -871,18 +964,18 @@ class Setup_Controller
     {
         Tinebase_Auth::setBackendType($_data['backend']);
         $config = (isset($_data[$_data['backend']])) ? $_data[$_data['backend']] : $_data;
-        
+
         $excludeKeys = array('adminLoginName', 'adminPassword', 'adminPasswordConfirmation');
         foreach ($excludeKeys as $key) {
             if (array_key_exists($key, $config)) {
                 unset($config[$key]);
             }
         }
-        
+
         Tinebase_Auth::setBackendConfiguration($config);
         Tinebase_Auth::saveBackendConfiguration();
     }
-    
+
     /**
      * Update accountsStorage
      *
@@ -893,12 +986,12 @@ class Setup_Controller
     {
         $originalBackend = Tinebase_User::getConfiguredBackend();
         $newBackend = $_data['backend'];
-        
+
         Tinebase_User::setBackendType($_data['backend']);
         $config = (isset($_data[$_data['backend']])) ? $_data[$_data['backend']] : $_data;
         Tinebase_User::setBackendConfiguration($config);
         Tinebase_User::saveBackendConfiguration();
-        
+
         if ($originalBackend != $newBackend && $this->isInstalled('Addressbook') && $originalBackend == Tinebase_User::SQL) {
             Setup_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . " Switching from $originalBackend to $newBackend account storage");
             try {
@@ -906,20 +999,20 @@ class Setup_Controller
                 $transactionId = Tinebase_TransactionManager::getInstance()->startTransaction($db);
                 $this->_migrateFromSqlAccountsStorage();
                 Tinebase_TransactionManager::getInstance()->commitTransaction($transactionId);
-        
+
             } catch (Exception $e) {
                 Tinebase_TransactionManager::getInstance()->rollBack();
                 Setup_Core::getLogger()->err(__METHOD__ . '::' . __LINE__ . ' ' . $e->getMessage());
                 Setup_Core::getLogger()->err(__METHOD__ . '::' . __LINE__ . ' ' . $e->getTraceAsString());
-                
+
                 Tinebase_User::setBackendType($originalBackend);
                 Tinebase_User::saveBackendConfiguration();
-                
+
                 throw $e;
             }
         }
     }
-    
+
     /**
      * migrate from SQL account storage to another one (for example LDAP)
      * - deletes all users, groups and roles because they will be
@@ -929,35 +1022,35 @@ class Setup_Controller
     {
         Setup_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Deleting all user accounts, groups, roles and rights');
         Tinebase_User::factory(Tinebase_User::SQL)->deleteAllUsers();
-        
+
         $contactSQLBackend = new Addressbook_Backend_Sql();
         $allUserContactIds = $contactSQLBackend->search(new Addressbook_Model_ContactFilter(array('type' => 'user')), null, true);
         if (count($allUserContactIds) > 0) {
             $contactSQLBackend->delete($allUserContactIds);
         }
-        
-        
+
+
         Tinebase_Group::factory(Tinebase_Group::SQL)->deleteAllGroups();
         $listsSQLBackend = new Addressbook_Backend_List();
         $allGroupListIds = $listsSQLBackend->search(new Addressbook_Model_ListFilter(array('type' => 'group')), null, true);
         if (count($allGroupListIds) > 0) {
             $listsSQLBackend->delete($allGroupListIds);
         }
-        
-        
+
+
         $roles = Tinebase_Acl_Roles::getInstance();
         $roles->deleteAllRoles();
-        
+
         // import users (from new backend) / create initial users (SQL)
         Tinebase_User::syncUsers(true);
-        
+
         $roles->createInitialRoles();
         $applications = Tinebase_Application::getInstance()->getApplications(NULL, 'id');
         foreach ($applications as $application) {
              Setup_Initialize::initializeApplicationRights($application);
         }
     }
-    
+
     /**
      * Update redirect settings
      *
@@ -978,7 +1071,7 @@ class Setup_Controller
             }
         }
     }
-    
+
     /**
      *
      * get auth provider data
@@ -994,7 +1087,7 @@ class Setup_Controller
 
         return $result;
     }
-    
+
     /**
      * get Accounts storage data
      *
@@ -1007,7 +1100,7 @@ class Setup_Controller
 
         return $result;
     }
-    
+
     /**
      * Get redirect Settings from config table.
      * If Tinebase is not installed, default values will be returned.
@@ -1035,7 +1128,7 @@ class Setup_Controller
     public function getEmailConfig()
     {
         $result = array();
-        
+
         foreach ($this->_emailConfigKeys as $configName => $configKey) {
             $config = Tinebase_Config::getInstance()->getConfigAsArray($configKey, 'Tinebase', array());
             if (! empty($config) && ! isset($config['active'])) {
@@ -1043,10 +1136,10 @@ class Setup_Controller
             }
             $result[$configName] = $config;
         }
-        
+
         return $result;
     }
-    
+
     /**
      * save email config
      *
@@ -1056,19 +1149,19 @@ class Setup_Controller
     public function saveEmailConfig($_data)
     {
         if (Tinebase_Core::isLogLevel(Zend_Log::TRACE)) Tinebase_Core::getLogger()->trace(__METHOD__ . '::' . __LINE__ . ' ' . print_r($_data, TRUE));
-        
+
         $this->_enableCaching();
-        
+
         foreach ($this->_emailConfigKeys as $configName => $configKey) {
             if (array_key_exists($configName, $_data)) {
                 Tinebase_Config::getInstance()->setConfigForApplication($configKey, Zend_Json::encode($_data[$configName]));
             }
         }
     }
-    
+
     /**
      * save email config
-     * 
+     *
      * @param array $_data
      * @return void
      */
@@ -1076,17 +1169,17 @@ class Setup_Controller
     {
         Tinebase_Config::getInstance()->setConfigForApplication(Tinebase_Model_Config::MESSENGER, $_data);
     }
-    
+
     /**
      * get messenger config data
-     * 
+     *
      * @return array
      */
     public function getMessengerConfig()
     {
         return Tinebase_Config::getInstance()->getConfigAsArray(Tinebase_Model_Config::MESSENGER, 'Tinebase', array());
     }
-    
+
     /**
      * returns all email config keys
      *
@@ -1096,7 +1189,7 @@ class Setup_Controller
     {
         return $this->_emailConfigKeys;
     }
-    
+
     /**
      * get accepted terms config
      *
@@ -1106,7 +1199,7 @@ class Setup_Controller
     {
         return Tinebase_Config::getInstance()->getConfigAsArray(Tinebase_Config::ACCEPTEDTERMSVERSION, 'Tinebase', 0);
     }
-    
+
     /**
      * save acceptedTermsVersion
      *
@@ -1117,7 +1210,7 @@ class Setup_Controller
     {
         Tinebase_Config::getInstance()->setConfigForApplication(Tinebase_Config::ACCEPTEDTERMSVERSION, Zend_Json::encode($_data));
     }
-    
+
     /**
      * save config option in db using {@see Tinebase_Config::setConfigForApplication}
      *
@@ -1130,7 +1223,7 @@ class Setup_Controller
         $value = is_string($_value) ? $_value : Zend_Json::encode($_value);
         Tinebase_Config::getInstance()->setConfigForApplication($_key, $value);
     }
-    
+
     /**
      * create new setup user session
      *
@@ -1142,16 +1235,16 @@ class Setup_Controller
     {
         $setupAuth = new Setup_Auth($_username, $_password);
         $authResult = Zend_Auth::getInstance()->authenticate($setupAuth);
-        
+
         if ($authResult->isValid()) {
             Tinebase_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Valid credentials, setting username in session and registry.');
             //Zend_Session::registerValidator(new Zend_Session_Validator_HttpUserAgent());
             Zend_Session::regenerateId();
-            
+
             Setup_Core::set(Setup_Core::USER, $_username);
             Setup_Core::getSession()->setupuser = $_username;
             return true;
-            
+
         } else {
             Tinebase_Core::getLogger()->notice(__METHOD__ . '::' . __LINE__ . ' Invalid credentials! ' . print_r($authResult->getMessages(), TRUE));
             Zend_Session::destroy();
@@ -1159,7 +1252,7 @@ class Setup_Controller
             return false;
         }
     }
-    
+
     /**
      * destroy session
      *
@@ -1169,7 +1262,7 @@ class Setup_Controller
     {
         Zend_Session::destroy();
     }
-    
+
     /**
      * install list of applications
      *
@@ -1180,12 +1273,12 @@ class Setup_Controller
     public function installApplications($_applications, $_options = null)
     {
         $this->_clearCache();
-        
+
         // check requirements for initial install / add required apps to list
         if (! $this->isInstalled('Tinebase')) {
-    
+
             $minimumRequirements = array('Tinebase', 'Addressbook', 'Admin');
-            
+
             foreach ($minimumRequirements as $requiredApp) {
                 if (!in_array($requiredApp, $_applications) && !$this->isInstalled($requiredApp)) {
                     // Addressbook has to be installed with Tinebase for initial data (user contact)
@@ -1196,7 +1289,7 @@ class Setup_Controller
                 }
             }
         }
-        
+
         // get xml and sort apps first
         $applications = array();
         foreach($_applications as $applicationName) {
@@ -1207,9 +1300,9 @@ class Setup_Controller
             }
         }
         $applications = $this->_sortInstallableApplications($applications);
-                
+
         Setup_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Installing applications: ' . print_r(array_keys($applications), true));
-        
+
         foreach ($applications as $name => $xml) {
             $this->_installApplication($xml, $_options);
         }
@@ -1225,12 +1318,12 @@ class Setup_Controller
         $this->_clearCache();
 
         $installedApps = Tinebase_Application::getInstance()->getApplications();
-        
+
         // uninstall all apps if tinebase ist going to be uninstalled
         if (count($installedApps) !== count($_applications) && in_array('Tinebase', $_applications)) {
             $_applications = $installedApps->name;
         }
-        
+
         // deactivate foreign key check if all installed apps should be uninstalled
         if (count($installedApps) == count($_applications) && get_class($this->_backend) == 'Setup_Backend_Mysql') {
             $this->_backend->setForeignKeyChecks(0);
@@ -1251,14 +1344,14 @@ class Setup_Controller
                 $applications[$applicationName] = $this->getSetupXml($applicationName);
             }
             $applications = $this->_sortUninstallableApplications($applications);
-            
+
             foreach ($applications as $name => $xml) {
                 $app = Tinebase_Application::getInstance()->getApplicationByName($name);
                 $this->_uninstallApplication($app);
             }
         }
     }
-    
+
     /**
      * install given application
      *
@@ -1272,16 +1365,17 @@ class Setup_Controller
         if ($this->_backend === NULL) {
             throw new Tinebase_Exception_Backend_Database('Need configured and working database backend for install.');
         }
-        
+
         try {
             $createdTables = array();
             if (isset($_xml->tables)) {
                 foreach ($_xml->tables[0] as $tableXML) {
                     $table = Setup_Backend_Schema_Table_Factory::factory('Xml', $tableXML);
                     $currentTable = $table->name;
-                    
+
                     try {
                         $this->_backend->createTable($table);
+                        $this->saveTableMetadata($tableXML);
                     } catch (Zend_Db_Statement_Exception $zdse) {
                         throw new Tinebase_Exception_Backend_Database('Could not create table: ' . $zdse->getMessage());
                     } catch (Zend_Db_Adapter_Exception $zdae) {
@@ -1290,33 +1384,33 @@ class Setup_Controller
                     $createdTables[] = $table;
                 }
             }
-    
+
             $application = new Tinebase_Model_Application(array(
                 'name'      => (string)$_xml->name,
                 'status'    => $_xml->status ? (string)$_xml->status : Tinebase_Application::ENABLED,
                 'order'     => $_xml->order ? (string)$_xml->order : 99,
                 'version'   => (string)$_xml->version
             ));
-            
+
             Setup_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' installing application: ' . $_xml->name);
-            
+
             $application = Tinebase_Application::getInstance()->addApplication($application);
-            
+
             // keep track of tables belonging to this application
             foreach ($createdTables as $table) {
                 Tinebase_Application::getInstance()->addApplicationTable($application, (string) $table->name, (int) $table->version);
             }
-            
+
             // insert default records
             if (isset($_xml->defaultRecords)) {
                 foreach ($_xml->defaultRecords[0] as $record) {
                     $this->_backend->execInsertStatement($record);
                 }
             }
-            
+
             // look for import definitions and put them into the db
             $this->createImportExportDefinitions($application);
-            
+
             Setup_Initialize::initialize($application, $_options);
         } catch (Exception $e) {
             $table = (isset($currentTable)) ? ' Table: ' . $currentTable : '';
@@ -1336,7 +1430,7 @@ class Setup_Controller
             $path =
                 $this->_baseDir . $_application->name .
                 DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . 'definitions';
-    
+
             if (file_exists($path)) {
                 foreach (new DirectoryIterator($path) as $item) {
                     $filename = $path . DIRECTORY_SEPARATOR . $item->getFileName();
@@ -1353,7 +1447,7 @@ class Setup_Controller
             }
         }
     }
-    
+
     /**
      * uninstall app
      *
@@ -1363,7 +1457,7 @@ class Setup_Controller
     {
         Setup_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Uninstall ' . $_application);
         $applicationTables = Tinebase_Application::getInstance()->getApplicationTables($_application);
-        
+
         do {
             $oldCount = count($applicationTables);
 
@@ -1376,7 +1470,7 @@ class Setup_Controller
 
             foreach ($applicationTables as $key => $table) {
                 Setup_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . " Remove table: $table");
-                
+
                 try {
                     $this->_backend->dropTable($table);
                     if ($_application->name != 'Tinebase') {
@@ -1388,7 +1482,7 @@ class Setup_Controller
                     // might still have some foreign keys
                     $message = $e->getMessage();
                     Setup_Core::getLogger()->warn(__METHOD__ . '::' . __LINE__ . " Could not drop table $table - " . $message);
-                    
+
                     // remove app table if table not found in db
                     if (preg_match('/SQLSTATE\[42S02\]: Base table or view not found/', $message) && $_application->name != 'Tinebase') {
                         Tinebase_Application::getInstance()->removeApplicationTable($_application, $table);
@@ -1396,16 +1490,16 @@ class Setup_Controller
                     }
                 }
             }
-            
+
             if ($oldCount > 0 && count($applicationTables) == $oldCount) {
                 throw new Setup_Exception('dead lock detected oldCount: ' . $oldCount);
             }
         } while (count($applicationTables) > 0);
-                
+
         if ($_application->name != 'Tinebase') {
             // delete containers, config options and other data for app
             Tinebase_Application::getInstance()->removeApplicationData($_application);
-            
+
             // remove application from table of installed applications
             Tinebase_Application::getInstance()->deleteApplication($_application);
         }
@@ -1421,7 +1515,7 @@ class Setup_Controller
     protected function _sortInstallableApplications($_applications)
     {
         $result = array();
-        
+
         // begin with Tinebase, Admin and Addressbook
         $alwaysOnTop = array('Tinebase', 'Admin', 'Addressbook');
         foreach ($alwaysOnTop as $app) {
@@ -1430,7 +1524,7 @@ class Setup_Controller
                 unset($_applications[$app]);
             }
         }
-        
+
         // get all apps to install ($name => $dependencies)
         $appsToSort = array();
         foreach($_applications as $name => $xml) {
@@ -1438,10 +1532,10 @@ class Setup_Controller
             if (isset($depends['application'])) {
                 if ($depends['application'] == 'Tinebase') {
                     $appsToSort[$name] = array();
-                    
+
                 } else {
                     $depends['application'] = (array) $depends['application'];
-                    
+
                     foreach ($depends['application'] as $app) {
                         // don't add tinebase (all apps depend on tinebase)
                         if ($app != 'Tinebase') {
@@ -1453,13 +1547,13 @@ class Setup_Controller
                 $appsToSort[$name] = array();
             }
         }
-        
+
         //Setup_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' ' . print_r($appsToSort, true));
-        
+
         // re-sort apps
         $count = 0;
         while (count($appsToSort) > 0 && $count < MAXLOOPCOUNT) {
-            
+
             foreach($appsToSort as $name => $depends) {
 
                 if (empty($depends)) {
@@ -1477,12 +1571,12 @@ class Setup_Controller
             }
             $count++;
         }
-        
+
         if ($count == MAXLOOPCOUNT) {
             Setup_Core::getLogger()->warn(__METHOD__ . '::' . __LINE__ .
                 " Some Applications could not be installed because of (cyclic?) dependencies: " . print_r(array_keys($appsToSort), TRUE));
         }
-        
+
         return $result;
     }
 
@@ -1495,7 +1589,7 @@ class Setup_Controller
     protected function _sortUninstallableApplications($_applications)
     {
         $result = array();
-        
+
         // get all apps to uninstall ($name => $dependencies)
         $appsToSort = array();
         foreach($_applications as $name => $xml) {
@@ -1504,10 +1598,10 @@ class Setup_Controller
                 if (isset($depends['application'])) {
                     if ($depends['application'] == 'Tinebase') {
                         $appsToSort[$name] = array();
-                        
+
                     } else {
                         $depends['application'] = (array) $depends['application'];
-                        
+
                         foreach ($depends['application'] as $app) {
                             // don't add tinebase (all apps depend on tinebase)
                             if ($app != 'Tinebase') {
@@ -1520,14 +1614,14 @@ class Setup_Controller
                 }
             }
         }
-        
+
         // re-sort apps
         $count = 0;
         while (count($appsToSort) > 0 && $count < MAXLOOPCOUNT) {
 
             foreach($appsToSort as $name => $depends) {
                 //Setup_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . " - $count $name - " . print_r($depends, true));
-                
+
                 // don't uninstall if another app depends on this one
                 $otherAppDepends = FALSE;
                 foreach($appsToSort as $innerName => $innerDepends) {
@@ -1536,7 +1630,7 @@ class Setup_Controller
                         break;
                     }
                 }
-                
+
                 // add it to results
                 if (!$otherAppDepends) {
                     $result[$name] = $_applications[$name];
@@ -1545,7 +1639,7 @@ class Setup_Controller
             }
             $count++;
         }
-        
+
         if ($count == MAXLOOPCOUNT) {
             Setup_Core::getLogger()->warn(__METHOD__ . '::' . __LINE__ .
                 " Some Applications could not be uninstalled because of (cyclic?) dependencies: " . print_r(array_keys($appsToSort), TRUE));
@@ -1556,10 +1650,10 @@ class Setup_Controller
             $result['Tinebase'] = $_applications['Tinebase'];
             unset($_applications['Tinebase']);
         }
-        
+
         return $result;
     }
-    
+
     /**
      * check if an application is installed
      *
@@ -1574,10 +1668,10 @@ class Setup_Controller
         } catch (Exception $e) {
             $result = FALSE;
         }
-        
+
         return $result;
     }
-    
+
     /**
      * clear cache
      *
@@ -1587,12 +1681,12 @@ class Setup_Controller
     {
         // setup cache (via tinebase because it is disabled in setup by default)
         Tinebase_Core::setupCache(TRUE);
-        
+
         Setup_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . ' Clearing cache ...');
-        
+
         // clear cache
         $cache = Setup_Core::getCache()->clean(Zend_Cache::CLEANING_MODE_ALL);
-        
+
         // deactivate cache again
         Tinebase_Core::setupCache(FALSE);
     }
